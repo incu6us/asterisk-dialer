@@ -146,6 +146,11 @@ textarea {
       overflow-y: scroll;
     }
   }
+  &-input {
+    &_hasError {
+      border-color: #CA4C3C;
+    }
+  }
 }
 .help {
   &-text {
