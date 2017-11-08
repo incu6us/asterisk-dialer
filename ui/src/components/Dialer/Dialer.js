@@ -2,7 +2,7 @@ import React from 'react';
 import {Button} from '../Button/Button';
 import Table from '../Table/Table';
 import {DialerTable} from '../DialerTable/DialerTable';
-import {COLUMNS, DIALER_COLUMNS} from "../../utils/consts";
+import * as CONSTS from "../../utils/consts";
 
 
 export const Dialer = ({
@@ -12,19 +12,45 @@ export const Dialer = ({
     pagingChange,
     changePriority,
     submitPriority,
-    cancelChangePriority
+    cancelChangePriority,
+    startDialer,
+    stopDialer,
+    isAppStarted,
+    isAppStopped,
 }) => {
     return (
         <div className={'app-wrapper'}>
+            {
+                isAppStarted ?
+                    <div className="app-alert-box app-alert-box_success">
+                        Application started successfully
+                    </div>: null
+            }
+            {
+                isAppStopped ?
+                    <div className="app-alert-box app-alert-box_warning">
+                        Application stopped successfully
+                    </div>: null
+            }
             <div className={'app-button-wrapper clearfix'}>
-                <Button className={'app-button app-button_success left'} inscription={'Start'}/>
-                <Button className={'app-button app-button_delete right'} inscription={'Stop'}/>
+                <Button
+                    className={'app-button app-button_success left'}
+                    inscription={'Start'}
+                    onClick={() => startDialer(CONSTS.API[CONSTS.START])}
+                    isDisabled={isAppStarted}
+                />
+                <Button
+                    className={'app-button app-button_delete right'}
+                    inscription={'Stop'}
+                    onClick={()=>stopDialer(CONSTS.API[CONSTS.STOP])}
+                    isDisabled={isAppStopped}
+                />
             </div>
-            <Table fields={operators} columns={COLUMNS}/>
+            <Table fields={operators} columns={CONSTS.COLUMNS}/>
             <h2>Phone call orders</h2>
             <DialerTable
                 orders={dialerLists}
-                columns={DIALER_COLUMNS}
+                columns={CONSTS.DIALER_COLUMNS}
                 paging={paging}
                 actions={{
                     pagingChange,
