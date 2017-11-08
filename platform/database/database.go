@@ -20,7 +20,7 @@ type DialerUser struct {
     Exten      string    `gorm:"type:varchar(10);DEFAULT:''" json:"exten"`
 }
 
-type DialerMsisdnList struct {
+type MsisdnList struct {
     ID           int                  `gorm:"primary_key" sql:"index" json:"id"`
     Msisdn       string               `sql:"type:varchar(20);not null;index" json:"msisdn"`
     Status       string               `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
@@ -34,10 +34,10 @@ type DialerMsisdnList struct {
     CallerIDName string               `sql:"type:varchar(20);index" json:"callerIdName"`
     Uniqueid     string               `sql:"type:varchar(20);index" json:"uniqueId"`
     TimeCalled   time.Time            `sql:"type:TIMESTAMP;index" json:"timeCalled"`
-    Priority     DialerMsisdnPriority `json:"offer" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
+    Priority     MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
-type DialerMsisdnPriority struct {
+type MsisdnPriority struct {
     ID       int  `json:"id" gorm:"primary_key" sql:"index"`
     MsisdnID int  `sql:"index" gorm:"unique_index;not null"`
     Priority uint `sql:"DEFAULT:10"`
@@ -62,10 +62,10 @@ func Connect(tomlConfig *config.TomlConfig) (*gorm.DB, error) {
         database.LogMode(tomlConfig.DB.Debug)
         dbInstance = database
 
-        if err = dbInstance.AutoMigrate(&DialerUser{}, &DialerMsisdnList{}, &DialerMsisdnPriority{}).Error; err != nil {
+        if err = dbInstance.AutoMigrate(&DialerUser{}, &MsisdnList{}, &MsisdnPriority{}).Error; err != nil {
             xlog.Errorf("err on Automigrate: %v", err)
         }
-        if err = dbInstance.Model(&DialerMsisdnPriority{}).AddForeignKey("msisdn_id", "dialer_msisdn_lists(id)", "CASCADE", "CASCADE").Error; err != nil {
+        if err = dbInstance.Model(&MsisdnPriority{}).AddForeignKey("msisdn_id", "msisdn_lists(id)", "CASCADE", "CASCADE").Error; err != nil {
             xlog.Errorf("error to create an ForeignKey: %s", err)
         }
     }
@@ -118,7 +118,7 @@ func DeleteMSISDNOlderThenWeek() {
         log.Fatalf("error to delete racords older then 7 days: %s", err)
     }
 
-    query.Delete(&DialerMsisdnList{}, "time < DATE(NOW()) - INTERVAL 7 DAY")
+    query.Delete(&MsisdnList{}, "time < DATE(NOW()) - INTERVAL 7 DAY")
 }
 func UpdatePeerStatus(user, status, action, exten string) {
     query, err := Connect(config.GetConfig())
@@ -151,7 +151,7 @@ func ProcesseMsisdn(callerIdNum string) string {
 
     tx := query.Begin()
 
-    msisdn := &DialerMsisdnList{}
+    msisdn := &MsisdnList{}
 
     if err := tx.Raw(
         "SELECT * FROM `dialer_msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
@@ -163,7 +163,7 @@ func ProcesseMsisdn(callerIdNum string) string {
         return ""
     }
 
-    if err = tx.Model(&DialerMsisdnList{}).Where("id = ?", msisdn.ID).Updates(map[interface{}]interface{}{
+    if err = tx.Model(&MsisdnList{}).Where("id = ?", msisdn.ID).Updates(map[interface{}]interface{}{
         "status":        "progress",
         "caller_id_num": callerIdNum,
         "time_called":   time.Now().UTC(),
@@ -201,7 +201,7 @@ func UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channe
     )
 
     if cause == "16" {
-        if err = tx.Model(&DialerMsisdnList{}).Where(
+        if err = tx.Model(&MsisdnList{}).Where(
             "id = ? and caller_id_num = ? and msisdn = ? and (status = ? or status = ?)",
             userToIdCopy,
             callerIDNum,
@@ -220,7 +220,7 @@ func UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channe
             tx.Rollback()
         }
     } else {
-        if err = tx.Model(&DialerMsisdnList{}).Where(
+        if err = tx.Model(&MsisdnList{}).Where(
             "id = ? and caller_id_num = ? and msisdn = ? and (status = ? or status = ?)",
             userToIdCopy,
             callerIDNum,
@@ -252,7 +252,7 @@ func AddNewNumbers(numbers []string) error {
     }
 
     for _, number := range numbers {
-        if err := query.Create(&DialerMsisdnList{Msisdn: number}).Error; err != nil {
+        if err := query.Create(&MsisdnList{Msisdn: number}).Error; err != nil {
             return err
         }
     }
