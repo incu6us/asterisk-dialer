@@ -21,25 +21,25 @@ type DialerUser struct {
 }
 
 type DialerMsisdnList struct {
-    ID           int       `gorm:"primary_key" sql:"index" json:"id"`
-    Msisdn       string    `sql:"type:varchar(20);not null;index" json:"msisdn"`
-    Status       string    `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
-    Time         time.Time `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
-    ActionID     string    `sql:"type:varchar(50);index" json:"actionId"`
-    CauseTxt     string    `sql:"type:varchar(50)" json:"causeTxt"`
-    Cause        string    `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
-    Event        string    `sql:"type:varchar(50)" json:"event"`
-    Channel      string    `sql:"type:varchar(50);index" json:"channel"`
-    CallerIDNum  string    `sql:"type:varchar(20);index" json:"callerIdNum"`
-    CallerIDName string    `sql:"type:varchar(20);index" json:"callerIdName"`
-    Uniqueid     string    `sql:"type:varchar(20);index" json:"uniqueId"`
-    TimeCalled   time.Time `sql:"type:TIMESTAMP;index" json:"timeCalled"`
-    Priority DialerMsisdnPriority `json:"offer" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
+    ID           int                  `gorm:"primary_key" sql:"index" json:"id"`
+    Msisdn       string               `sql:"type:varchar(20);not null;index" json:"msisdn"`
+    Status       string               `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
+    Time         time.Time            `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
+    ActionID     string               `sql:"type:varchar(50);index" json:"actionId"`
+    CauseTxt     string               `sql:"type:varchar(50)" json:"causeTxt"`
+    Cause        string               `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
+    Event        string               `sql:"type:varchar(50)" json:"event"`
+    Channel      string               `sql:"type:varchar(50);index" json:"channel"`
+    CallerIDNum  string               `sql:"type:varchar(20);index" json:"callerIdNum"`
+    CallerIDName string               `sql:"type:varchar(20);index" json:"callerIdName"`
+    Uniqueid     string               `sql:"type:varchar(20);index" json:"uniqueId"`
+    TimeCalled   time.Time            `sql:"type:TIMESTAMP;index" json:"timeCalled"`
+    Priority     DialerMsisdnPriority `json:"offer" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
 type DialerMsisdnPriority struct {
-    ID       int `json:"id" gorm:"primary_key" sql:"index"`
-    MsisdnID int `sql:"index" gorm:"unique_index;not null"`
+    ID       int  `json:"id" gorm:"primary_key" sql:"index"`
+    MsisdnID int  `sql:"index" gorm:"unique_index;not null"`
     Priority uint `sql:"DEFAULT:10"`
 }
 
@@ -62,7 +62,7 @@ func Connect(tomlConfig *config.TomlConfig) (*gorm.DB, error) {
         database.LogMode(tomlConfig.DB.Debug)
         dbInstance = database
 
-        if err = dbInstance.AutoMigrate(&DialerUser{}, &DialerMsisdnList{}).Error; err != nil {
+        if err = dbInstance.AutoMigrate(&DialerUser{}, &DialerMsisdnList{}, &DialerMsisdnPriority{}).Error; err != nil {
             xlog.Errorf("err on Automigrate: %v", err)
         }
     }
