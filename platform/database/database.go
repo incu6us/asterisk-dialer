@@ -252,7 +252,7 @@ func AddNewNumbers(numbers []string) error {
     }
 
     for _, number := range numbers {
-        if err := query.Create(&MsisdnList{Msisdn: number}).Error; err != nil {
+        if err := query.Create(&MsisdnList{Msisdn: number, Priority:MsisdnPriority{}}).Error; err != nil {
             return err
         }
     }
