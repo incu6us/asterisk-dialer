@@ -96,6 +96,19 @@ func (a *ApiHandler) UploadMSISDNList(w http.ResponseWriter, r *http.Request) {
 	a.print(w, r, "Numbers added")
 }
 
+func (a *ApiHandler) GetMsisdnListWithPriority(w http.ResponseWriter, r *http.Request)  {
+	list, err := database.GetMsisdnListWithPriority()
+	if err != nil {
+		xlog.Errorf("get msisdn list with priority error: %s",err)
+		w.WriteHeader(http.StatusInternalServerError)
+		a.print(w, r, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", a.ContentType)
+	w.WriteHeader(http.StatusOK)
+	a.print(w, r, list)
+}
 // simple check which improve, that server is running
 func (a *ApiHandler) Ready(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", a.ContentType)
