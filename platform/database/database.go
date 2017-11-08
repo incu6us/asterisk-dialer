@@ -65,6 +65,9 @@ func Connect(tomlConfig *config.TomlConfig) (*gorm.DB, error) {
         if err = dbInstance.AutoMigrate(&DialerUser{}, &DialerMsisdnList{}, &DialerMsisdnPriority{}).Error; err != nil {
             xlog.Errorf("err on Automigrate: %v", err)
         }
+        if err = dbInstance.Model(&DialerMsisdnPriority{}).AddForeignKey("msisdn_id", "dialer_msisdn_lists(id)", "CASCADE", "CASCADE").Error; err != nil {
+            xlog.Errorf("error to create an ForeignKey: %s", err)
+        }
     }
 
     return dbInstance, nil
