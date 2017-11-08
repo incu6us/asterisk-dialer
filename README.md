@@ -1,4 +1,4 @@
-# asterisk-dialer [![Build Status](https://travis-ci.org/incu6us/asterisk-dialer.svg?branch=master)](https://travis-ci.org/incu6us/asterisk-dialer) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d1e83421924045a6a6bdaba87588a881)](https://www.codacy.com/app/incu6us/asterisk-dialer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=incu6us/asterisk-dialer&amp;utm_campaign=Badge_Grade)
+# asterisk-dialer [![Build Status](https://travis-ci.org/incu6us/asterisk-dialer.svg?branch=master)](https://travis-ci.org/incu6us/asterisk-dialer) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b90f76e81907427e9f2d0a4124a34028)](https://www.codacy.com/app/incu6us/asterisk-dialer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=incu6us/asterisk-dialer&amp;utm_campaign=Badge_Grade)
 
 ### api
 
