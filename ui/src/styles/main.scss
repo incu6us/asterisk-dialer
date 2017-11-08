@@ -151,6 +151,30 @@ textarea {
       border-color: #CA4C3C;
     }
   }
+  &-alert-box {
+    width: 80%;
+    margin: 11px auto;
+    border-style: solid;
+    border-width: 0;
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 5px 15px 5px 5px;
+    position: relative;
+    transition: opacity 300ms ease-out;
+    &_success {
+      color: #95b840;
+      background-color: #f6f9ee;
+      border-left: 3px solid #a5c559;
+      border-radius: 0;
+    }
+    &_warning {
+      color: #c8783f;
+      background-color: #faf4ef;
+      border-left: 3px solid #d18e5e;
+      border-radius: 0;
+    }
+  }
 }
 .help {
   &-text {
