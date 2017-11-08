@@ -9,29 +9,7 @@ class AppStore extends ReduceStore {
 
     getInitialState () {
         return {
-            operators: [
-                {
-                    action: "Hangup",
-                    exten: "0937530213",
-                    peer: "1001",
-                    peerStatus: "Registered",
-                    time: "2017-11-07T22:24:56+02:00"
-                },
-                {
-                    action: "Fuckup",
-                    exten: "0937530213",
-                    peer: "1002",
-                    peerStatus: "Registered",
-                    time: "2017-11-07T22:25:56+02:00"
-                },
-                {
-                    action: "Lookup",
-                    exten: "0937530213",
-                    peer: "1002",
-                    peerStatus: "Fucking shit",
-                    time: "2017-11-07T22:25:56+02:00"
-                }
-            ],
+            operators: [],
             dialerLists: [
                 {
                     msisdn: '0633467991',
@@ -171,12 +149,12 @@ class AppStore extends ReduceStore {
                     ...state,
                 };
 
-            // case ACTIONS.REGISTERED_USERS_SUCCESS:
-            //     console.log(action.data);
-            //     return {
-            //         ...state,
-            //     };
-            //
+            case ACTIONS.REGISTERED_USERS_SUCCESS:
+                return {
+                    ...state,
+                    operators: action.data.result
+                };
+
             case ACTIONS.DIALER_START_SUCCESS:
                 return {
                     ...state,

@@ -3,12 +3,10 @@ import {render} from 'react-dom';
 import App from './components/App';
 import css from './styles/style.scss';
 import * as actions from './actions/actions'
-import * as consts from './utils/consts';
+import * as CONSTS from './utils/consts';
 
 const getData = () => {
-    const registeredUsersUrl = consts.getHostFn().replace('{API}', consts.registeredUSers);
-    const dialerStatusUrl = consts.getHostFn().replace('{API}', consts.status);
-    //actions.getRegisteredUsers(registeredUsersUrl);
+    actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]);
     //actions.getDialerStatus(dialerStatusUrl);
 };
 
