@@ -1,0 +1,69 @@
+hash: 35907a328b501b8272c45a07e3f6d751cbdd0d386c3755214b3a569eb802d675
+updated: 2017-11-07T18:28:28.199131308+02:00
+imports:
+- name: github.com/abbot/go-http-auth
+  version: efc9484eee77263a11f158ef4f30fcc30298a942
+- name: github.com/bit4bit/gami
+  version: 94e6a8a29ab83a23f191883d7ded0b01269b5717
+- name: github.com/fsouza/go-dockerclient
+  version: 4bc6a18363f79b32c26f92e2e6d8bfd30d79a770
+- name: github.com/go-sql-driver/mysql
+  version: a0583e0143b1624142adab07e0e97fe106d99561
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/handlers
+  version: a4043c62cc2329bacda331d33fc908ab11ef0ec3
+- name: github.com/gorilla/mux
+  version: bcd8bc72b08df0f70df986b97f95590779502d31
+- name: github.com/incu6us/asterisk-dialer
+  version: 3ce27df6208b2e183c0d02233bc795887469b353
+  subpackages:
+  - internal/platform/api
+  - internal/platform/api/handler
+  - internal/platform/database
+  - internal/platform/dialer
+  - internal/platform/ftpclient
+  - internal/platform/scheduler
+  - internal/utils/config
+  - internal/utils/dialer-helper
+  - internal/utils/file-utils
+  - internal/utils/srvlogger
+- name: github.com/ivahaev/amigo
+  version: 912d50d5f88d969a27d93eb4501117d95bd7b29a
+  subpackages:
+  - uuid
+- name: github.com/jasonlvhit/gocron
+  version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
+- name: github.com/jinzhu/gorm
+  version: 5174cc5c242a728b435ea2be8a2f7f998e15429b
+  subpackages:
+  - dialects/mysql
+- name: github.com/jinzhu/inflection
+  version: 1c35d901db3da928c72a72d8458480cc9ade058f
+- name: github.com/jlaffaye/ftp
+  version: 6bccbfbf6c7b1d81afd0301c21a1c9ffbfb3afc8
+- name: github.com/naoina/go-stringutil
+  version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
+- name: github.com/naoina/toml
+  version: e6f5723bf2a66af014955e0888881314cf294129
+  subpackages:
+  - ast
+- name: github.com/rs/cors
+  version: 7af7a1e09ba336d2ea14b1ce73bf693c6837dbf6
+- name: github.com/rs/xhandler
+  version: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
+- name: github.com/rs/xid
+  version: 02dd45c33376f85d1064355dc790dcc4850596b1
+- name: github.com/rs/xlog
+  version: a13127cd594f9d45ab68d564bd82aa47492c2a10
+  subpackages:
+  - internal/term
+- name: github.com/secsy/goftp
+  version: 848bd83f73185175b43f6093f1639af3b463b889
+- name: github.com/streadway/amqp
+  version: 27859d32540aebd2e5befa52dc59ae8e6a0132b6
+- name: golang.org/x/net
+  version: a8e8f92cd65f5ff48599999fa4001d9b95ecea85
+  subpackages:
+  - context
+testImports: []

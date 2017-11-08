@@ -1,0 +1,38 @@
+[general]
+listen = ":3000"
+call-timeout = 10
+
+#levelDebug = "debug"
+#levelInfo  = "info"
+#levelWarn  = "warn"
+#levelError = "error"
+#levelFatal = "fatal"
+log-level = "debug"
+
+[ami]
+host = "example.com"
+port = 5038
+username = "admin"
+password = "password"
+
+[db]
+host = "example.com:3306"
+database = "dialer"
+username = "root"
+password = "password"
+debug = true
+
+[asterisk]
+call-context = "gsm-out"
+playback-context = "playback-out"
+
+[mq]
+user = "admin"
+password = "password"
+host = "example.com"
+port = "5672"
+
+[ftp]
+host = "example.com:21"
+user = "admin"
+password = "password"
