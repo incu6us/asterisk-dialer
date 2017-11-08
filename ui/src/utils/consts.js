@@ -1,7 +1,7 @@
-export const REGISTERED_USERS = 'registeredUsers';
-export const START = 'start';
-export const STOP = 'stop';
-export const APP_STATUS = 'status';
+export const REGISTERED_USERS = '/api/v1/dialer/registeredUsers';
+export const START = '/api/v1/dialer/start';
+export const STOP = '/api/v1/dialer/stop';
+export const APP_STATUS = '/api/v1/dialer/status';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
