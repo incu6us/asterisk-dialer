@@ -41,8 +41,8 @@ type MsisdnLists []MsisdnList
 
 type MsisdnPriority struct {
     ID       int  `json:"id" gorm:"primary_key" sql:"index"`
-    MsisdnID int  `sql:"index" gorm:"unique_index;not null"`
-    Priority uint `sql:"DEFAULT:10"`
+    MsisdnID int  `json:"msisdnId" sql:"index" gorm:"unique_index;not null"`
+    Priority uint `json:"priority" sql:"DEFAULT:10"`
 }
 
 type DialerUsers []DialerUser
