@@ -92,6 +92,12 @@ var apis = APIs{
 		handler.GetHandler().UploadMSISDNList,
 	},
 	API{
+		"msisdnList",
+		"GET",
+		"/msisdn/all",
+		handler.GetHandler().GetMsisdnListWithPriority,
+	},
+	API{
 		"test",
 		"GET",
 		"/test",

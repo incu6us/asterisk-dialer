@@ -37,10 +37,12 @@ type MsisdnList struct {
     Priority     *MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
+type MsisdnLists []MsisdnList
+
 type MsisdnPriority struct {
     ID       int  `json:"id" gorm:"primary_key" sql:"index"`
-    MsisdnID int  `sql:"index" gorm:"unique_index;not null"`
-    Priority uint `sql:"DEFAULT:10"`
+    MsisdnID int  `json:"msisdnId" sql:"index" gorm:"unique_index;not null"`
+    Priority uint `json:"priority" sql:"DEFAULT:10"`
 }
 
 type DialerUsers []DialerUser
@@ -241,6 +243,19 @@ func UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channe
     }
 
     tx.Commit()
+}
+
+func GetMsisdnListWithPriority() (*[]MsisdnList, error) {
+    query, err := Connect(config.GetConfig())
+    if err != nil {
+        xlog.Fatal(err)
+        return nil, err
+    }
+
+    list := new([]MsisdnList)
+    query.Preload("Priority").Find(list)
+
+    return list, nil
 }
 
 func AddNewNumbers(numbers []string) error {

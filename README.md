@@ -6,6 +6,7 @@
  * `/api/v1/dialer/stop` - stop dialer
  * `/api/v1/dialer/status` - get status for dialer (is it started or stopped)
  * `/api/v1/dialer/registeredUsers` - get registered users, which could accept a call
+ * `/api/v1/dialer/msisdn/all` - get all msisdns
  * `/api/v1/ready` - app check
  * `/api/v1/dialer/upload-msisdn` - api for list uploading (POST-method) 
 
