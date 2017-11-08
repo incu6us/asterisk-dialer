@@ -47,4 +47,5 @@ export const API = {
     [START]: getHostFn().replace('{API}', START),
     [STOP]: getHostFn().replace('{API}', STOP),
     [APP_STATUS]: getHostFn().replace('{API}', APP_STATUS),
+    [REGISTERED_USERS]: getHostFn().replace('{API}', REGISTERED_USERS),
 };
