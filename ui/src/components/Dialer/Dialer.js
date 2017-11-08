@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button} from '../Button/Button';
-import {Table} from '../Table/Table';
+import Table from '../Table/Table';
 import {DialerTable} from '../DialerTable/DialerTable';
 import {COLUMNS, DIALER_COLUMNS} from "../../utils/consts";
 
