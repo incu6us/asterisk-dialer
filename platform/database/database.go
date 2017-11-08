@@ -21,20 +21,20 @@ type DialerUser struct {
 }
 
 type MsisdnList struct {
-    ID           int                  `gorm:"primary_key" sql:"index" json:"id"`
-    Msisdn       string               `sql:"type:varchar(20);not null;index" json:"msisdn"`
-    Status       string               `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
-    Time         time.Time            `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
-    ActionID     string               `sql:"type:varchar(50);index" json:"actionId"`
-    CauseTxt     string               `sql:"type:varchar(50)" json:"causeTxt"`
-    Cause        string               `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
-    Event        string               `sql:"type:varchar(50)" json:"event"`
-    Channel      string               `sql:"type:varchar(50);index" json:"channel"`
-    CallerIDNum  string               `sql:"type:varchar(20);index" json:"callerIdNum"`
-    CallerIDName string               `sql:"type:varchar(20);index" json:"callerIdName"`
-    Uniqueid     string               `sql:"type:varchar(20);index" json:"uniqueId"`
-    TimeCalled   time.Time            `sql:"type:TIMESTAMP;index" json:"timeCalled"`
-    Priority     MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
+    ID           int             `gorm:"primary_key" sql:"index" json:"id"`
+    Msisdn       string          `sql:"type:varchar(20);not null;index" json:"msisdn"`
+    Status       string          `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
+    Time         time.Time       `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
+    ActionID     string          `sql:"type:varchar(50);index" json:"actionId"`
+    CauseTxt     string          `sql:"type:varchar(50)" json:"causeTxt"`
+    Cause        string          `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
+    Event        string          `sql:"type:varchar(50)" json:"event"`
+    Channel      string          `sql:"type:varchar(50);index" json:"channel"`
+    CallerIDNum  string          `sql:"type:varchar(20);index" json:"callerIdNum"`
+    CallerIDName string          `sql:"type:varchar(20);index" json:"callerIdName"`
+    Uniqueid     string          `sql:"type:varchar(20);index" json:"uniqueId"`
+    TimeCalled   time.Time       `sql:"type:TIMESTAMP;index" json:"timeCalled"`
+    Priority     *MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
 type MsisdnPriority struct {
@@ -252,7 +252,7 @@ func AddNewNumbers(numbers []string) error {
     }
 
     for _, number := range numbers {
-        if err := query.Create(&MsisdnList{Msisdn: number, Priority:MsisdnPriority{}}).Error; err != nil {
+        if err := query.Create(&MsisdnList{Msisdn: number, Priority: &MsisdnPriority{}}).Error; err != nil {
             return err
         }
     }
