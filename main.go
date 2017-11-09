@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/rs/cors"
@@ -28,24 +27,25 @@ func main() {
 	xlogger := xlog.New(srvlogger.LoggerConfig(config.GetConfig()))
 	log.SetOutput(xlogger)
 
-	var host = conf.Ami.Host + ":" + strconv.Itoa(conf.Ami.Port)
-
-	dialerInstance := dialer.CreateDialer(host, conf.Ami.Username, conf.Ami.Password)
+	if err = new(database.DB).Connect(conf); err != nil {
+		xlog.Errorf("DB connection problems: %s", err)
+	}
+	dialerInstance := dialer.CreateDialer(conf, database.GetDB())
 	if err = dialerInstance.Connect(); err != nil {
 		xlog.Errorf("Error: %s", err)
 	}
-	dialerInstance.StartDialing()
+	//dialerInstance.StartDialing()
 
 	srv := &http.Server{
 		Addr: conf.General.Listen,
 		//ReadTimeout:  api.HTTP_TIMEOUT,
 		//WriteTimeout: api.HTTP_TIMEOUT,
-		Handler: cors.Default().Handler(api.NewHandler()),
+		Handler: cors.Default().Handler(api.NewHandler(database.GetDB())),
 	}
 
 	sc := scheduler.SchedulerProvider()
 	sc.Run(getMsisdnsFromFtp, 30)
-	sc.Run(database.DeleteMSISDNOlderThenWeek, 3600)
+	sc.Run(database.GetDB().DeleteMSISDNOlderThenWeek, 3600)
 	sc.Start()
 
 	if err = srv.ListenAndServe(); err != nil {
@@ -75,7 +75,7 @@ func getMsisdnsFromFtp() {
 
 	//
 	if len(nums) > 0 {
-		if err := database.AddNewNumbers(nums); err != nil {
+		if err := database.GetDB().AddNewNumbers(nums); err != nil {
 			xlog.Error(err)
 		}
 	} else {
