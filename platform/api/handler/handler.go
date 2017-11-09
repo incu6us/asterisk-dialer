@@ -112,9 +112,9 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     a.print(w, r, list)
 }
 
-type MsisdnPaging struct {
+type msisdnPaging struct {
     Total   int                    `json:"total"`
-    Records *[]database.MsisdnList `json:"records"`
+    Result *[]database.MsisdnList `json:"result"`
 }
 
 // defaults: page=20; if limit=0 - show all records
@@ -152,7 +152,11 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
 
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
-    a.print(w, r, MsisdnPaging{Total: count, Records: list})
+    if err := json.NewEncoder(w).Encode(msisdnPaging{Total: count, Result: list}); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        xlog.Errorf("parse message error: %s", err)
+        return
+    }
 }
 
 // simple check which improve, that server is running
