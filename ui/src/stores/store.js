@@ -12,7 +12,7 @@ class AppStore extends ReduceStore {
             operators: [],
             dialerLists: [],
             paging: {
-                total: 100,
+                total: null,
                 currentPage: 1,
                 numPerPage: 10,
             },
@@ -37,6 +37,10 @@ class AppStore extends ReduceStore {
             case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
                 return {
                     ...state,
+                    paging: {
+                        ...state.paging,
+                        total: action.data.total,
+                    },
                     dialerLists: action.data.result
                 };
 
@@ -123,6 +127,7 @@ class AppStore extends ReduceStore {
                     paging: {
                         ...state.paging,
                         currentPage: action.page,
+                        total: action.data.total,
                     }
                 };
 
