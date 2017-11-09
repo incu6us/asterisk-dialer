@@ -9,6 +9,7 @@ const EXTEN = 'exten';
 const PEER = 'peer';
 const PEER_STATUS = 'peerStatus';
 
+const ID = 'id';
 const MSISDN = 'msisdn';
 const STATUS = 'status';
 const TIME = 'time';
@@ -28,6 +29,7 @@ export const COLUMNS = {
 };
 
 export const DIALER_COLUMNS = {
+    [ID]: 'ID',
     [MSISDN]: 'Phone Number',
     [STATUS]: 'Status',
     [TIME]: 'Time',
