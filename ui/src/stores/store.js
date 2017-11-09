@@ -76,7 +76,7 @@ class AppStore extends ReduceStore {
                 const updateByChangePriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
-                            if (dialer.msisdn === action.msisdn) {
+                            if (dialer.id === action.id) {
                                 dialer.isChanging = true;
                             }
                             return dialer;
