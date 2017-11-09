@@ -123,12 +123,18 @@ textarea {
     }
     &_success {
       background-color: #44D97A;
+      &:disabled {
+        background-color: #999999;
+      }
       &__small {
         padding: 5px;
       }
     }
     &_delete{
       background-color: #CA4C3C;
+      &:disabled {
+        background-color: #999999;
+      }
       &__small {
         padding: 5px;
       }
