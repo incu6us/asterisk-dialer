@@ -2,13 +2,13 @@ package handler
 
 import (
     "encoding/json"
+    "errors"
     "io/ioutil"
     "net/http"
     "strconv"
     "sync"
 
     "github.com/gorilla/mux"
-    "github.com/pkg/errors"
     "github.com/rs/xlog"
 
     "github.com/incu6us/asterisk-dialer/platform/database"
