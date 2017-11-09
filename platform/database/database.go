@@ -252,7 +252,9 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
     if page != 0 {
         page = page - 1
     }
-    return d.getPreloadPriorityDB().Limit(row).Offset(page).Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+    return d.getPreloadPriorityDB().
+        Limit(row).Offset(page).
+        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {
