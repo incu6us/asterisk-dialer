@@ -12,7 +12,7 @@ import (
     "github.com/incu6us/asterisk-dialer/utils/config"
 )
 
-const(
+const (
     defaultMsisdnRowsCount = 20
 )
 
@@ -224,6 +224,12 @@ func (d *DB) GetMsisdnListInProgress() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
     err := d.getMsisdnInProgressDB(list).Error
     return list, err
+}
+
+func (d *DB) GetMsisdnCount() int {
+    var count int
+    d.getMsisdnInProgressDB(&[]MsisdnList{}).Count(&count)
+    return count
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (*[]MsisdnList, error) {
