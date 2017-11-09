@@ -82,7 +82,6 @@ func GetAutodialUsers() DialerUsers {
     }
 
     users := DialerUsers{}
-    //query.Table("dialer_users").Find(&users)
     query.Model(&DialerUser{}).Find(&users)
 
     return users
@@ -95,7 +94,6 @@ func GetRegisteredUsers() DialerUsers {
     }
 
     users := DialerUsers{}
-    //query.Table("dialer_users").Find(&users)
     query.Model(&DialerUser{}).Where("peer_status = ? or peer_status = ?", "Reachable", "Registered").Find(&users)
 
     return users
@@ -139,10 +137,7 @@ func UpdatePeerStatus(user, status, action, exten string) {
     }
 
     userFiledsUpdate["time"] = time.Now().UTC()
-
-    //query.Table("dialer_users").Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
     query.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
-
 }
 
 func ProcesseMsisdn(callerIdNum string) string {
