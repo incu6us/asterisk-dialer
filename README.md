@@ -9,12 +9,14 @@
  * `GET: /api/v1/dialer/msisdn/all` - get all msisdns
  * `GET: /api/v1/dialer/msisdn/inProgress?limit=1&page=1` - get msisdns which are int progress(limit & page are optionals)
  * `PUT: /api/v1/dialer/msisdn/inProgress/{id}` - update msisdn priority
+   
    Body example:
    ```
    {"priority": 1}
    ```
  * `DELETE: /api/v1/dialer/msisdn/inProgress/{id}` - delete msisdn record
  * `POST: /api/v1/dialer/upload-msisdn` - api for list uploading 
+ 
     Example for uploading:
     ```
     0631234567;
