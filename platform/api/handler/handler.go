@@ -18,7 +18,7 @@ import (
 
 type ApiHandler struct {
     DefaultContentType string
-    db          *database.DB
+    db                 *database.DB
 }
 
 type response struct {
@@ -112,29 +112,35 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     a.print(w, r, list)
 }
 
+type MsisdnPaging struct {
+    Total   int                    `json:"total"`
+    Records *[]database.MsisdnList `json:"records"`
+}
+
 // defaults: page=20; if limit=0 - show all records
 func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
     var page, limit int
     var list *[]database.MsisdnList
     var err error
     vars := r.URL.Query() // []string
-    if varPage, ok := vars["page"]; ok{
+    if varPage, ok := vars["page"]; ok {
         if len(varPage) > 0 {
             if page, err = strconv.Atoi(varPage[0]); err != nil {
                 xlog.Errorf("can't parse 'page' param from url: %s", err)
             }
         }
     }
-    if varLimit, ok := vars["limit"]; ok{
+    if varLimit, ok := vars["limit"]; ok {
         if len(varLimit) > 0 {
             if limit, err = strconv.Atoi(varLimit[0]); err != nil {
                 xlog.Errorf("can't parse 'limit' param from url: %s", err)
             }
         }
     }
+    count := a.db.GetMsisdnCount()
     if limit == 0 {
         list, err = a.db.GetMsisdnListInProgress()
-    }else{
+    } else {
         list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page)
     }
     if err != nil {
@@ -146,7 +152,7 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
 
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
-    a.print(w, r, list)
+    a.print(w, r, MsisdnPaging{Total: count, Records: list})
 }
 
 // simple check which improve, that server is running
