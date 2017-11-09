@@ -14,7 +14,7 @@ class AppStore extends ReduceStore {
             paging: {
                 total: null,
                 currentPage: 1,
-                numPerPage: 10,
+                numPerPage: 20,
             },
             isAppStarted: false,
             isAppStopped: false,
@@ -23,10 +23,6 @@ class AppStore extends ReduceStore {
 
     reduce (state, action) {
         switch (action.type) {
-            case ACTIONS.APP_INIT:
-                return {
-                    ...state,
-                };
 
             case ACTIONS.REGISTERED_USERS_SUCCESS:
                 return {
