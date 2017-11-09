@@ -7,6 +7,7 @@ import (
     "time"
 
     "github.com/jinzhu/gorm"
+    "github.com/pkg/errors"
     "github.com/rs/xlog"
 
     "github.com/incu6us/asterisk-dialer/utils/config"
@@ -257,6 +258,17 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
     return d.getPreloadPriorityDB().
         Limit(row).Offset(page).
         Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+}
+
+func (d *DB) UpdatePriority(id, priority int) error {
+    if priority > 10 && priority < 0 {
+        return errors.New("Priority can't be more then 10")
+    }
+
+    err := d.Table("msisdn_priorities").Where("msisdn_id = ?", id).
+        Updates(map[string]interface{}{"priority": priority}).Error
+
+    return err
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {
