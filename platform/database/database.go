@@ -1,13 +1,13 @@
 package database
 
 import (
+    "errors"
     "fmt"
     "strings"
     "sync"
     "time"
 
     "github.com/jinzhu/gorm"
-    "github.com/pkg/errors"
     "github.com/rs/xlog"
 
     "github.com/incu6us/asterisk-dialer/utils/config"
@@ -261,7 +261,7 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
 }
 
 func (d *DB) UpdatePriority(id, priority int) error {
-    if priority > 10 && priority < 0 && id < 0{
+    if priority > 10 && priority < 0 && id < 0 {
         return errors.New("Priority or ID error")
     }
 
@@ -270,7 +270,7 @@ func (d *DB) UpdatePriority(id, priority int) error {
 }
 
 func (d *DB) DeleteMsisdn(id int) error {
-    if id < 0{
+    if id < 0 {
         return errors.New("ID can't be less then 0")
     }
 
