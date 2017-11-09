@@ -118,10 +118,12 @@ func (a *ApiHandler) Ready(w http.ResponseWriter, r *http.Request) {
     a.print(w, r, "Service is up and running")
 }
 
-func GetHandler() *ApiHandler {
+func InitHandlers(db *database.DB) {
     once.Do(func() {
-        handler = &ApiHandler{ContentType: CONTENT_TYPE, db: database.GetDB()}
+        handler = &ApiHandler{ContentType: CONTENT_TYPE, db: db}
     })
+}
 
+func GetHandler() *ApiHandler {
     return handler
 }

@@ -40,7 +40,7 @@ func main() {
 		Addr: conf.General.Listen,
 		//ReadTimeout:  api.HTTP_TIMEOUT,
 		//WriteTimeout: api.HTTP_TIMEOUT,
-		Handler: cors.Default().Handler(api.NewHandler()),
+		Handler: cors.Default().Handler(api.NewHandler(database.GetDB())),
 	}
 
 	sc := scheduler.SchedulerProvider()

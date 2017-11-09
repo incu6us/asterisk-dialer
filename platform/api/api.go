@@ -5,8 +5,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+    "github.com/incu6us/asterisk-dialer/platform/database"
 
-	"github.com/incu6us/asterisk-dialer/platform/api/handler"
+    "github.com/incu6us/asterisk-dialer/platform/api/handler"
 )
 
 const (
@@ -24,9 +25,11 @@ type API struct {
 
 type APIs []API
 
-func NewHandler() http.Handler {
+func NewHandler(db *database.DB) http.Handler {
 
 	router := mux.NewRouter().StrictSlash(true)
+
+	handler.InitHandlers(db)
 
 	for _, api := range apis {
 		if api.Name != "ready" {
