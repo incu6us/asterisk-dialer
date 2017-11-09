@@ -7,6 +7,7 @@ import * as CONSTS from './utils/consts';
 
 const getData = () => {
     actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]);
+    actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]);
     //actions.getDialerStatus(dialerStatusUrl);
 };
 
