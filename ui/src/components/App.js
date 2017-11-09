@@ -23,10 +23,8 @@ class App extends Component {
     }
 
     componentDidMount(){
-        setInterval(()=> {
-            actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]);
-            actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]);
-        }, 5000);
+        setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
+        setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
     }
 
     render() {
