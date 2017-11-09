@@ -10,6 +10,7 @@ branches:
     - master
 
 script:
+  - cd $PROJECT_DIR
   - go test -v $(ls -d */|egrep -v '(vendor|ui)')
   - go build -v .
 
