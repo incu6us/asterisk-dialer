@@ -1,7 +1,7 @@
-export const registeredUSers = 'registeredUsers';
-export const start = 'start';
-export const stop = 'stop';
-export const status = 'status';
+export const REGISTERED_USERS = 'api/v1/dialer/registeredUsers';
+export const START = 'api/v1/dialer/start';
+export const STOP = 'api/v1/dialer/stop';
+export const APP_STATUS = 'api/v1/dialer/status';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
@@ -40,5 +40,12 @@ export const DIALER_COLUMNS = {
 };
 
 export const getHostFn = () => {
-    return window.location.protocol+"//"+window.location.host+"{API}";
+    return window.location.protocol+"//"+window.location.host+"/{API}";
+};
+
+export const API = {
+    [START]: getHostFn().replace('{API}', START),
+    [STOP]: getHostFn().replace('{API}', STOP),
+    [APP_STATUS]: getHostFn().replace('{API}', APP_STATUS),
+    [REGISTERED_USERS]: getHostFn().replace('{API}', REGISTERED_USERS),
 };
