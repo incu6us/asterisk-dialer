@@ -8,6 +8,11 @@
  * `/api/v1/dialer/registeredUsers` - get registered users, which could accept a call
  * `/api/v1/dialer/msisdn/all` - get all msisdns
  * `/api/v1/dialer/msisdn/inProgress?limit=1&page=1` - get msisdns which are int progress(limit & page are optionals)
+ * `/api/v1/dialer/msisdn/inProgress/{id}` - update number priority
+   Body:
+   ```
+   {"priority": 1}
+   ```
  * `/api/v1/ready` - app check
  * `/api/v1/dialer/upload-msisdn` - api for list uploading (POST-method) 
 
