@@ -94,10 +94,10 @@ export const cancelChangePriority = (msisdn) => {
     });
 };
 
-export const changePriority = (msisdn) => {
+export const changePriority = (id) => {
     appDispatcher.dispatch({
         type: ACTIONS.CHANGE_PRIORITY,
-        msisdn
+        id
     });
 };
 
