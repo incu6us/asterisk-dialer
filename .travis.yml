@@ -9,7 +9,7 @@ branches:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install nodejs yarn
+  - sudo apt-get install yarn
   - yarn install
   - yarn build
 
