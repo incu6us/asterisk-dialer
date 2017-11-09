@@ -1,7 +1,7 @@
 // utils
 import { ReduceStore } from 'flux/utils';
 // consts
-import * as ACTION from '../actions/types';
+import * as ACTIONS from '../actions/types';
 import appDispatcher from '../utils/dispatcher';
 
 
@@ -9,29 +9,7 @@ class AppStore extends ReduceStore {
 
     getInitialState () {
         return {
-            operators: [
-                {
-                    action: "Hangup",
-                    exten: "0937530213",
-                    peer: "1001",
-                    peerStatus: "Registered",
-                    time: "2017-11-07T22:24:56+02:00"
-                },
-                {
-                    action: "Fuckup",
-                    exten: "0937530213",
-                    peer: "1002",
-                    peerStatus: "Registered",
-                    time: "2017-11-07T22:25:56+02:00"
-                },
-                {
-                    action: "Lookup",
-                    exten: "0937530213",
-                    peer: "1002",
-                    peerStatus: "Fucking shit",
-                    time: "2017-11-07T22:25:56+02:00"
-                }
-            ],
+            operators: [],
             dialerLists: [
                 {
                     msisdn: '0633467991',
@@ -159,25 +137,53 @@ class AppStore extends ReduceStore {
                 currentPage: 1,
                 numPerPage: 10,
             },
+            isAppStarted: false,
+            isAppStopped: false,
         };
     }
 
     reduce (state, action) {
         switch (action.type) {
-            case ACTION.APP_INIT:
+            case ACTIONS.APP_INIT:
                 return {
                     ...state,
                 };
 
-            // case ACTION.REGISTERED_USERS_SUCCESS:
-            //     console.log(action.data);
-            //     return {
-            //         ...state,
-            //     };
-            //
-            // case ACTION.DIALER_START_SUCCESS:
-            //     console.log(action.data);
-            case ACTION.CHANGE_PRIORITY:
+            case ACTIONS.REGISTERED_USERS_SUCCESS:
+                return {
+                    ...state,
+                    operators: action.data.result
+                };
+
+            case ACTIONS.DIALER_START_SUCCESS:
+                return {
+                    ...state,
+                    isAppStarted: true,
+                    isAppStopped: false,
+                };
+
+            case ACTIONS.DIALER_START_FAIL:
+                return {
+                    ...state,
+                    isAppStarted: false,
+                    isAppStopped: false,
+                };
+
+            case ACTIONS.DIALER_STOP_SUCCESS:
+                return {
+                    ...state,
+                    isAppStarted: false,
+                    isAppStopped: true,
+                };
+
+            case ACTIONS.DIALER_STOP_FAIL:
+                return {
+                    ...state,
+                    isAppStarted: false,
+                    isAppStopped: false,
+                };
+
+            case ACTIONS.CHANGE_PRIORITY:
                 const updateByChangePriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
@@ -193,7 +199,7 @@ class AppStore extends ReduceStore {
                     ...updateByChangePriority
                 };
 
-            case ACTION.CHANGE_PRIORITY_SUBMIT:
+            case ACTIONS.CHANGE_PRIORITY_SUBMIT:
                 const updateBysubmitPriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
@@ -209,7 +215,7 @@ class AppStore extends ReduceStore {
                     ...updateBysubmitPriority
                 };
 
-            case ACTION.CHANGE_PRIORITY_CANCEL:
+            case ACTIONS.CHANGE_PRIORITY_CANCEL:
                 const updateByCancelPriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
