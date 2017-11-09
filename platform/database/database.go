@@ -215,21 +215,25 @@ func (d *DB) UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event
 
 func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
-    d.Preload("Priority").Find(list)
+    d.getPreloadPriorityDB().Find(list)
 
     return list, nil
 }
 
 func (d *DB) GetMsisdnListInProgress() (int, *[]MsisdnList, error) {
+    var count int
     list := new([]MsisdnList)
+    d.Find(&[]MsisdnList{}).Count(&count)
     err := d.getMsisdnInProgressDB(list).Error
-    return len(*list), list, err
+    return count, list, err
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (int, *[]MsisdnList, error) {
+    var count int
     list := new([]MsisdnList)
+    d.Find(&[]MsisdnList{}).Count(&count)
     err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
-    return len(*list), list, err
+    return count, list, err
 }
 
 func (d *DB) getPreloadPriorityDB() *gorm.DB {
