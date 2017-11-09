@@ -8,8 +8,8 @@ branches:
     - master
 
 before_install:
-  - apt-get update
-  - apt-get install nodejs yarn
+  - sudo apt-get update
+  - sudo apt-get install nodejs yarn
   - yarn install
   - yarn build
 
