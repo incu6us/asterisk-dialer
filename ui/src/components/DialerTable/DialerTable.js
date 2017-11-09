@@ -6,7 +6,6 @@ import {Paging} from '../Paging/Paging';
 export const DialerTable = ({
     orders,
     columns,
-    pagingChange,
     paging,
     actions,
 }) => {
@@ -21,7 +20,7 @@ export const DialerTable = ({
             total={paging.total}
             current={paging.currentPage}
             numPerPage={paging.numPerPage}
-            onChange={( page ) => pagingChange( page )}
+            onChange={( page ) => actions.pagingChange( page )}
         />
     </div>
 };
