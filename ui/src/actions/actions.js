@@ -83,7 +83,7 @@ export const pagingChange = (page) => {
 
 export const submitPriority = (id, priority) => {
     const url = CONSTS.getHostFn().replace('{API}', CONSTS.CALL_IN_PROGRESS) + `/${id}`;
-    http.del(url, {priority: priority})
+    http.put(url, {priority: priority})
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.SUBMIT_CHANGE_PRIORITY_SUCCESS,
             id,
@@ -120,5 +120,5 @@ export const deleteRecord = (id) => {
             type: ACTIONS.DELETE_RECORD_FAIL,
             error
         }))
-}
+};
 
