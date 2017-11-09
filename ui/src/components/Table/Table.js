@@ -79,7 +79,7 @@ export default class Table extends React.Component {
                                 </label>
                                 <Button
                                     className={'app-button app-button_success app-button_success__small'}
-                                    inscription={'Submit Priority'}
+                                    inscription={'Submit'}
                                     onClick={()=>tableActions.submitPriority(field.msisdn, priority)}
                                 />
                                 <Button
@@ -91,7 +91,7 @@ export default class Table extends React.Component {
                             <Button
                                 className={'app-button app-button_success app-button_success__small'}
                                 inscription={'Change Priority'}
-                                onClick={() => tableActions.changePriority(field.msisdn)}
+                                onClick={() => tableActions.changePriority(field.id)}
                             />
                     }
                 </div>;
