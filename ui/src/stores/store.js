@@ -72,6 +72,19 @@ class AppStore extends ReduceStore {
                     isAppStopped: false,
                 };
 
+            case ACTIONS.DIALER_STATUS_SUCCESS:
+                const updateStatus = action.data.result ? {
+                    isAppStarted: true,
+                    isAppStopped: false,
+                } : {
+                    isAppStarted: false,
+                    isAppStopped: true,
+                };
+                return {
+                    ...state,
+                    ...updateStatus
+                };
+
             case ACTIONS.CHANGE_PRIORITY:
                 const updateByChangePriority = {
                     dialerLists: [
