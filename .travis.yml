@@ -10,7 +10,7 @@ branches:
     - master
 
 script:
-  - go test -v $(glide novendor)
+  - go test -v $(ls -d */|egrep -v '(vendor|ui)')
   - go build -v .
 
 after_success:
