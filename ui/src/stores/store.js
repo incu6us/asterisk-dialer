@@ -10,130 +10,9 @@ class AppStore extends ReduceStore {
     getInitialState () {
         return {
             operators: [],
-            dialerLists: [
-                {
-                    msisdn: '0633467991',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1017',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '6',
-                },
-                {
-                    msisdn: '0633467992',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1018',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7',
-                },
-                {
-                    msisdn: '0633467993',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467994',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467995',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467996',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467997',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08'
-                },
-                {
-                    msisdn: '0633467998',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467999',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467987',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1019',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7'
-                },
-                {
-                    msisdn: '0633467988',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1017',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '6',
-                },
-                {
-                    msisdn: '0633467989',
-                    status: 'progress',
-                    time: '2017-11-07 09:00:01',
-                    causeTxt: 'User alerting, no answer',
-                    event: 'Hangup',
-                    callerIdNum: '1018',
-                    timeCalled: '2017-11-07 09:12:08',
-                    priority: '7',
-                },
-
-            ],
+            dialerLists: [],
             paging: {
-                total: 100,
+                total: null,
                 currentPage: 1,
                 numPerPage: 10,
             },
@@ -153,6 +32,16 @@ class AppStore extends ReduceStore {
                 return {
                     ...state,
                     operators: action.data.result
+                };
+
+            case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
+                return {
+                    ...state,
+                    paging: {
+                        ...state.paging,
+                        total: action.data.total,
+                    },
+                    dialerLists: action.data.result
                 };
 
             case ACTIONS.DIALER_START_SUCCESS:
@@ -229,6 +118,17 @@ class AppStore extends ReduceStore {
                 return {
                     ...state,
                     ...updateByCancelPriority
+                };
+
+            case ACTIONS.PAGING_CHANGE_SUCCESS:
+                return {
+                    ...state,
+                    dialerLists: action.data.result,
+                    paging: {
+                        ...state.paging,
+                        currentPage: action.page,
+                        total: action.data.total,
+                    }
                 };
 
             default:

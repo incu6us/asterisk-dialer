@@ -1,7 +1,7 @@
 import appDispatcher from '../utils/dispatcher';
 import * as http from '../utils/http';
 import * as ACTIONS from "./types";
-import * as consts from '../utils/consts';
+import * as CONSTS from '../utils/consts';
 
 export const getRegisteredUsers = (url) => {
     http.get(url)
@@ -23,6 +23,18 @@ export const getDialerStatus = (url) => {
         }))
         .catch(error => appDispatcher.dispatch({
             type: ACTIONS.DIALER_STATUS_FAIL,
+            error
+        }))
+};
+
+export const getCallInProgress = (url) => {
+    http.get(url)
+        .then(data => appDispatcher.dispatch({
+            type: ACTIONS.CALL_IN_PROGRESS_SUCCESS,
+            data
+        }))
+        .catch(error => appDispatcher.dispatch({
+            type: ACTIONS.CALL_IN_PROGRESS_FAIL,
             error
         }))
 };
@@ -51,7 +63,11 @@ export const stopDialer = (url) => {
         }))
 };
 
-export const pagingChange = (page, url) => {
+export const pagingChange = (page) => {
+    const url = CONSTS.getHostFn()
+        .replace('{API}', CONSTS.CALL_IN_PROGRESS)
+        .replace('{limit}', CONSTS.DEFAULT_RECORDS)
+        .replace('{page}', page);
     http.get(url)
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.PAGING_CHANGE_SUCCESS,
@@ -71,16 +87,12 @@ export const submitPriority = (msisdn) => {
     });
 };
 
-export const typingPriority = () => {
-
-}
-
 export const cancelChangePriority = (msisdn) => {
     appDispatcher.dispatch({
         type: ACTIONS.CHANGE_PRIORITY_CANCEL,
         msisdn
     });
-}
+};
 
 export const changePriority = (msisdn) => {
     appDispatcher.dispatch({
