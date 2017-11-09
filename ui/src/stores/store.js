@@ -23,10 +23,6 @@ class AppStore extends ReduceStore {
 
     reduce (state, action) {
         switch (action.type) {
-            case ACTIONS.APP_INIT:
-                return {
-                    ...state,
-                };
 
             case ACTIONS.REGISTERED_USERS_SUCCESS:
                 return {
@@ -35,6 +31,7 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
+                console.log('action ->>', action.data.result);
                 const callInProgressList = action.data.result.map(item => {
                     item.priority = item.priority.priority;
                     return item;
