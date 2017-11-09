@@ -81,7 +81,7 @@ export default class Table extends React.Component {
                                 <Button
                                     className={'app-button app-button_success app-button_success__small'}
                                     inscription={'Submit'}
-                                    onClick={()=>tableActions.submitPriority(field.id, priority)}
+                                    onClick={()=>this._handlePrioritySubmit(field.id, priority)}
                                 />
                                 <Button
                                     className={'app-button app-button_alert app-button_alert__small'}
@@ -115,6 +115,15 @@ export default class Table extends React.Component {
                 isError: true
             }));
         }
+    }
+
+    _handlePrioritySubmit = (id, priority) => {
+        const {tableActions} = this.props;
+        tableActions.submitPriority(id, priority)
+            .then(() => this.setState(state => ({
+                ...state,
+                priority: '',
+            })))
     }
 }
 
