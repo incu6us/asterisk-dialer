@@ -1,6 +1,7 @@
 package database
 
 import (
+    "errors"
     "fmt"
     "strings"
     "sync"
@@ -128,7 +129,9 @@ func (d *DB) ProcessedMsisdn(callerIdNum string) string {
     msisdn := &MsisdnList{}
 
     if err := tx.Raw(
-        "SELECT * FROM `msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
+        "SELECT * FROM `msisdn_lists` m, `msisdn_priorities` p "+
+            "WHERE m.id = p.msisdn_id and m.status = ? or m.status = ? order by p.priority, p.msisdn_id "+
+            "LIMIT 1 FOR UPDATE",
         "", "recall").
         Scan(msisdn).
         Error; err != nil {
@@ -250,11 +253,28 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
         row = defaultMsisdnRowsCount
     }
     if page != 0 {
-        page = page - 1
+        page = (page - 1) * row
     }
     return d.getPreloadPriorityDB().
         Limit(row).Offset(page).
         Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+}
+
+func (d *DB) UpdatePriority(id, priority int) error {
+    if priority > 10 && priority < 0 && id < 0 {
+        return errors.New("Priority or ID error")
+    }
+
+    return d.Table("msisdn_priorities").Where("msisdn_id = ?", id).
+        Updates(map[string]interface{}{"priority": priority}).Error
+}
+
+func (d *DB) DeleteMsisdn(id int) error {
+    if id < 0 {
+        return errors.New("ID can't be less then 0")
+    }
+
+    return d.Delete(&MsisdnList{}, "id = ?", id).Error
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {

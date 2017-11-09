@@ -15,9 +15,7 @@ import (
     "github.com/incu6us/asterisk-dialer/utils/config"
 )
 
-// TODO: make user registration without start state of dialer
-
-type Dialer struct {
+type dialer struct {
     dialerStatus        bool
     amiConnectionStatus bool
     randGenDigit        int
@@ -29,7 +27,7 @@ type Dialer struct {
 
 var (
     once        sync.Once
-    amiInstance *Dialer
+    amiInstance *dialer
     amigoClient *amigo.Amigo
     conf        = config.GetConfig()
 )
@@ -38,7 +36,7 @@ var (
     userIsCalling map[string]bool
 )
 
-func (a *Dialer) peerDial(message map[string]string) {
+func (a *dialer) peerDial(message map[string]string) {
     user := a.db.GetAutodialUser(strings.TrimPrefix(message["Peer"], "SIP/"))
     if user.Peer != "" &&
         !userIsCalling[strings.TrimPrefix(message["Peer"], "SIP/")] &&
@@ -49,7 +47,7 @@ func (a *Dialer) peerDial(message map[string]string) {
     }
 }
 
-func (a *Dialer) peerHangup(message map[string]string) {
+func (a *dialer) peerHangup(message map[string]string) {
     user := a.db.GetAutodialUser(message["CallerIDNum"])
     if user.Peer != "" {
         callerIDNum := message["CallerIDNum"]
@@ -85,9 +83,9 @@ func (a *Dialer) peerHangup(message map[string]string) {
     }
 }
 
-func (a *Dialer) peerStatusListening(message map[string]string) {
+func (a *dialer) peerStatusListening(message map[string]string) {
     user := a.db.GetAutodialUser(strings.TrimPrefix(message["Peer"], "SIP/"))
-    if user.Peer != "" && a.dialerStatus {
+    if user.Peer != "" {
 
         xlog.Infof("Peer status changed -> %v", message)
         a.db.UpdatePeerStatus(user.Peer, message["PeerStatus"], "", "")
@@ -95,6 +93,9 @@ func (a *Dialer) peerStatusListening(message map[string]string) {
         switch message["PeerStatus"] {
         case "Reachable", "Registered":
             time.Sleep(5 * time.Second)
+            if !a.dialerStatus {
+                return
+            }
             _, err := a.CallToUser(user.Peer)
             if err != nil {
                 xlog.Warnf("CallToUser problem: %s", err)
@@ -103,8 +104,7 @@ func (a *Dialer) peerStatusListening(message map[string]string) {
     }
 }
 
-func (a *Dialer) Connect() error {
-
+func (a *dialer) Connect() error {
     userIsCalling = make(map[string]bool)
 
     var err error
@@ -132,7 +132,7 @@ func (a *Dialer) Connect() error {
     return err
 }
 
-func (a *Dialer) callToAll() {
+func (a *dialer) callToAll() {
     users := a.db.GetRegisteredUsers()
     for _, user := range users {
         xlog.Debugf("Calling to %s", user.Peer)
@@ -140,7 +140,7 @@ func (a *Dialer) callToAll() {
     }
 }
 
-func (a *Dialer) originate(params map[string]string) (map[string]string, error) {
+func (a *dialer) originate(params map[string]string) (map[string]string, error) {
     params["ActionID"] = uuid.NewV4()
     params["Variable"] = "ActionID=" + params["ActionID"]
     params["Action"] = "Originate"
@@ -156,7 +156,7 @@ func (a *Dialer) originate(params map[string]string) (map[string]string, error) 
     return resp, nil
 }
 
-func (a *Dialer) CallToUser(userID string) (map[string]string, error) {
+func (a *dialer) CallToUser(userID string) (map[string]string, error) {
     // if user already calling by autodialer, then skip the new call request
     if userIsCalling[userID] {
         return nil, errors.New("already calling by dialer")
@@ -192,7 +192,7 @@ func (a *Dialer) CallToUser(userID string) (map[string]string, error) {
     return nil, nil
 }
 
-func (a *Dialer) StartDialing() string {
+func (a *dialer) StartDialing() string {
 
     if !a.dialerStatus {
         xlog.Debug("Dialer has been started...")
@@ -210,7 +210,7 @@ func (a *Dialer) StartDialing() string {
     return "Can't run. Already started"
 }
 
-func (a *Dialer) StopDialing() string {
+func (a *dialer) StopDialing() string {
 
     if a.dialerStatus {
 
@@ -223,22 +223,22 @@ func (a *Dialer) StopDialing() string {
     return "stopped"
 }
 
-func (a *Dialer) GetDialerStatus() bool {
+func (a *dialer) GetDialerStatus() bool {
     return a.dialerStatus
 }
 
-func (a *Dialer) GetAmiConnectionStatus() bool {
+func (a *dialer) GetAmiConnectionStatus() bool {
     return amigoClient.Connected()
 }
 
 // CreateDialer - create a new connection to Asterisk (singleton)
-func CreateDialer(cfg *config.TomlConfig, db *database.DB) *Dialer {
+func CreateDialer(cfg *config.TomlConfig, db *database.DB) *dialer {
     once.Do(func() {
-        amiInstance = &Dialer{
+        amiInstance = &dialer{
             host: fmt.Sprintf("%s:%d", cfg.Ami.Host, cfg.Ami.Port),
             user: cfg.Ami.Username,
             pass: cfg.Ami.Password,
-            db: db,
+            db:   db,
         }
 
         // call to all available users while started
@@ -257,6 +257,6 @@ func CreateDialer(cfg *config.TomlConfig, db *database.DB) *Dialer {
 }
 
 // GetDialer - get an existed connection
-func GetDialer() *Dialer {
+func GetDialer() *dialer {
     return amiInstance
 }
