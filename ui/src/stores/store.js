@@ -35,13 +35,17 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
+                const callInProgressList = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
                     paging: {
                         ...state.paging,
                         total: action.data.total,
                     },
-                    dialerLists: action.data.result
+                    dialerLists: callInProgressList
                 };
 
             case ACTIONS.DIALER_START_SUCCESS:
@@ -121,9 +125,13 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.PAGING_CHANGE_SUCCESS:
+                const pagingChangeList = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
-                    dialerLists: action.data.result,
+                    dialerLists: pagingChangeList,
                     paging: {
                         ...state.paging,
                         currentPage: action.page,
