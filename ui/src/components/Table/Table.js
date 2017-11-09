@@ -54,7 +54,8 @@ export default class Table extends React.Component {
             case DELETE:
                 return <Button
                     className={'app-button app-button_delete app-button_delete__small'}
-                    inscription={'Delete order'}
+                    inscription={'Delete record'}
+                    onClick={() => tableActions.deleteRecord(field.id)}
                 />;
             case CHANGE_PRIORITY:
                 return <div>
@@ -80,18 +81,18 @@ export default class Table extends React.Component {
                                 <Button
                                     className={'app-button app-button_success app-button_success__small'}
                                     inscription={'Submit'}
-                                    onClick={()=>tableActions.submitPriority(field.msisdn, priority)}
+                                    onClick={()=>tableActions.submitPriority(field.id, priority)}
                                 />
                                 <Button
                                     className={'app-button app-button_alert app-button_alert__small'}
                                     inscription={'Cancel'}
-                                    onClick={()=>tableActions.cancelChangePriority(field.msisdn)}
+                                    onClick={()=>tableActions.cancelChangePriority(field.id)}
                                 />
                             </div>:
                             <Button
                                 className={'app-button app-button_success app-button_success__small'}
                                 inscription={'Change Priority'}
-                                onClick={() => tableActions.changePriority(field.id)}
+                                onClick={()=>tableActions.changePriority(field.id)}
                             />
                     }
                 </div>;

@@ -15,6 +15,7 @@ export const Dialer = ({
     cancelChangePriority,
     startDialer,
     stopDialer,
+    deleteRecord,
     isAppStarted,
     isAppStopped,
 }) => {
@@ -56,7 +57,8 @@ export const Dialer = ({
                     pagingChange,
                     changePriority,
                     submitPriority,
-                    cancelChangePriority
+                    cancelChangePriority,
+                    deleteRecord
                 }}
             />
         </div>
