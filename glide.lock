@@ -35,7 +35,7 @@ imports:
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
 - name: github.com/jinzhu/gorm
-  version: 5174cc5c242a728b435ea2be8a2f7f998e15429b
+  version: 0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e
   subpackages:
   - dialects/mysql
 - name: github.com/jinzhu/inflection

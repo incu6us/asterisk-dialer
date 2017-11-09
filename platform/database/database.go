@@ -215,21 +215,25 @@ func (d *DB) UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event
 
 func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
-    d.Preload("Priority").Find(list)
+    d.getPreloadPriorityDB().Find(list)
 
     return list, nil
 }
 
 func (d *DB) GetMsisdnListInProgress() (int, *[]MsisdnList, error) {
+    var count int
     list := new([]MsisdnList)
+    d.Find(&[]MsisdnList{}).Count(&count)
     err := d.getMsisdnInProgressDB(list).Error
-    return len(*list), list, err
+    return count, list, err
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (int, *[]MsisdnList, error) {
+    var count int
     list := new([]MsisdnList)
+    d.Find(&[]MsisdnList{}).Count(&count)
     err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
-    return len(*list), list, err
+    return count, list, err
 }
 
 func (d *DB) getPreloadPriorityDB() *gorm.DB {
@@ -248,7 +252,9 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
     if page != 0 {
         page = page - 1
     }
-    return d.getPreloadPriorityDB().Limit(row).Offset(page).Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+    return d.getPreloadPriorityDB().
+        Limit(row).Offset(page).
+        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {

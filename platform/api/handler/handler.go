@@ -25,6 +25,11 @@ type response struct {
     Result interface{} `json:"result"`
 }
 
+type msisdnPaging struct {
+    Total  int                    `json:"total"`
+    Result *[]database.MsisdnList `json:"result"`
+}
+
 const (
     CONTENT_TYPE = "application/json"
 )
@@ -110,11 +115,6 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, list)
-}
-
-type msisdnPaging struct {
-    Total   int                    `json:"total"`
-    Result *[]database.MsisdnList `json:"result"`
 }
 
 // defaults: page=20; if limit=0 - show all records
