@@ -11,7 +11,7 @@ branches:
 
 script:
   - cd $PROJECT_DIR
-  - go test -v $(ls -d */|egrep -v '(vendor|ui)')
+  - go test -v .
   - go build -v .
 
 after_success:
