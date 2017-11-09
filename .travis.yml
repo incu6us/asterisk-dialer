@@ -9,15 +9,15 @@ branches:
   only:
     - master
 
-before_install:
+script:
+  - go test -v $(glide novendor)
+  - go build -v .
+
+after_install:
   - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
   - sudo apt-get update
   - sudo apt-get install yarn
-  - cd $PROJECT_DIR/ui && yarn install
-  - cd $PROJECT_DIR/ui && yarn build
-
-script:
-  - cd $PROJECT_DIR && go test -v $(glide novendor)
-  - cd $PROJECT_DIR && go build -v .
-
+  - cd $PROJECT_DIR/ui
+  - yarn install
+  - yarn build
