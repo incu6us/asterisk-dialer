@@ -43,7 +43,7 @@ func NewHandler(db *database.DB) http.Handler {
             router.
                 PathPrefix(generalPathPrefix).
                 Methods(api.Method).
-                Path(api.Pattern).
+                Path(api.Path+api.Pattern).
                 Name(api.Name).
                 Handler(api.HandlerFunc)
         }
@@ -111,7 +111,7 @@ var apis = APIs{
         "msisdnListInProgress",
         "GET",
         "/msisdn",
-        "/inProgress",
+        "/inProgress", // ?page=1&limit=20
         handler.GetHandler().GetMsisdnListInProgress,
     },
     API{

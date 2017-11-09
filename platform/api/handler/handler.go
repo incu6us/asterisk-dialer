@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "net/http"
+    "strconv"
     "sync"
 
     "github.com/gorilla/mux"
@@ -111,8 +112,31 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     a.print(w, r, list)
 }
 
+// defaults: page=20; if limit=0 - show all records
 func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
-    list, err := a.db.GetMsisdnListInProgress()
+    var page, limit int
+    var list *[]database.MsisdnList
+    var err error
+    vars := r.URL.Query() // []string
+    if varPage, ok := vars["page"]; ok{
+        if len(varPage) > 0 {
+            if page, err = strconv.Atoi(varPage[0]); err != nil {
+                xlog.Errorf("can't parse 'page' param from url: %s", err)
+            }
+        }
+    }
+    if varLimit, ok := vars["limit"]; ok{
+        if len(varLimit) > 0 {
+            if limit, err = strconv.Atoi(varLimit[0]); err != nil {
+                xlog.Errorf("can't parse 'limit' param from url: %s", err)
+            }
+        }
+    }
+    if limit == 0 {
+        list, err = a.db.GetMsisdnListInProgress()
+    }else{
+        list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page)
+    }
     if err != nil {
         xlog.Errorf("get msisdn list with priority error: %s", err)
         w.WriteHeader(http.StatusInternalServerError)

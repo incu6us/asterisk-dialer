@@ -12,6 +12,10 @@ import (
     "github.com/incu6us/asterisk-dialer/utils/config"
 )
 
+const(
+    defaultMsisdnRowsCount = 20
+)
+
 type DialerUser struct {
     Peer       string    `gorm:"type:varchar(10);unique;not null" json:"peer"`
     PeerStatus string    `gorm:"type:varchar(10);DEFAULT:'Unregister'" json:"peerStatus"`
@@ -218,8 +222,33 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
 
 func (d *DB) GetMsisdnListInProgress() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
-    err := d.Preload("Priority").Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall").Error
+    err := d.getMsisdnInProgressDB(list).Error
     return list, err
+}
+
+func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (*[]MsisdnList, error) {
+    list := new([]MsisdnList)
+    err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
+    return list, err
+}
+
+func (d *DB) getPreloadPriorityDB() *gorm.DB {
+    return d.Preload("Priority")
+}
+
+func (d *DB) getMsisdnInProgressDB(list *[]MsisdnList) *gorm.DB {
+    return d.getPreloadPriorityDB().
+        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+}
+
+func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page int) *gorm.DB {
+    if row == 0 {
+        row = defaultMsisdnRowsCount
+    }
+    if page != 0 {
+        page = page - 1
+    }
+    return d.getPreloadPriorityDB().Limit(row).Offset(page).Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {
