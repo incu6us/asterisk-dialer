@@ -252,7 +252,7 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
         row = defaultMsisdnRowsCount
     }
     if page != 0 {
-        page = (page - 1) * 10
+        page = (page - 1) * row
     }
     return d.getPreloadPriorityDB().
         Limit(row).Offset(page).
