@@ -2,14 +2,18 @@ package database
 
 import (
     "fmt"
-    "log"
     "strings"
+    "sync"
     "time"
 
     "github.com/jinzhu/gorm"
     "github.com/rs/xlog"
 
     "github.com/incu6us/asterisk-dialer/utils/config"
+)
+
+const(
+    defaultMsisdnRowsCount = 20
 )
 
 type DialerUser struct {
@@ -37,8 +41,6 @@ type MsisdnList struct {
     Priority     *MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
-type MsisdnLists []MsisdnList
-
 type MsisdnPriority struct {
     ID       int  `json:"id" gorm:"primary_key" sql:"index"`
     MsisdnID int  `json:"msisdnId" sql:"index" gorm:"unique_index;not null"`
@@ -47,85 +49,65 @@ type MsisdnPriority struct {
 
 type DialerUsers []DialerUser
 
-var dbInstance *gorm.DB
+type DB struct {
+    *gorm.DB
+}
+
+var db *DB
+var once sync.Once
 
 var userToId = make(map[string]int)
 
-func Connect(tomlConfig *config.TomlConfig) (*gorm.DB, error) {
-    if dbInstance == nil {
+func (d *DB) Connect(tomlConfig *config.TomlConfig) (error) {
+    var err error
+    once.Do(func() {
         connString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
             tomlConfig.DB.Username, tomlConfig.DB.Password, tomlConfig.DB.Host, tomlConfig.DB.Database)
 
-        database, err := gorm.Open("mysql", connString)
+        db = new(DB)
+        db.DB, err = gorm.Open("mysql", connString)
         if err != nil {
-            return nil, err
+            xlog.Errorf("error open database connection: %s", err)
         }
 
-        database.LogMode(tomlConfig.DB.Debug)
-        dbInstance = database
+        db.LogMode(tomlConfig.DB.Debug)
 
-        if err = dbInstance.AutoMigrate(&DialerUser{}, &MsisdnList{}, &MsisdnPriority{}).Error; err != nil {
+        if err = db.AutoMigrate(&DialerUser{}, &MsisdnList{}, &MsisdnPriority{}).Error; err != nil {
             xlog.Errorf("err on Automigrate: %v", err)
         }
-        if err = dbInstance.Model(&MsisdnPriority{}).AddForeignKey("msisdn_id", "msisdn_lists(id)", "CASCADE", "CASCADE").Error; err != nil {
+        if err = db.Model(&MsisdnPriority{}).AddForeignKey("msisdn_id", "msisdn_lists(id)", "CASCADE", "CASCADE").Error; err != nil {
             xlog.Errorf("error to create an ForeignKey: %s", err)
         }
-    }
-
-    return dbInstance, nil
+    })
+    return err
 }
 
-func GetAutodialUsers() DialerUsers {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-    }
-
+func (d *DB) GetAutodialUsers() DialerUsers {
     users := DialerUsers{}
-    query.Model(&DialerUser{}).Find(&users)
+    d.Model(&DialerUser{}).Find(&users)
 
     return users
 }
 
-func GetRegisteredUsers() DialerUsers {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-    }
-
+func (d *DB) GetRegisteredUsers() DialerUsers {
     users := DialerUsers{}
-    query.Model(&DialerUser{}).Where("peer_status = ? or peer_status = ?", "Reachable", "Registered").Find(&users)
+    d.Model(&DialerUser{}).Where("peer_status = ? or peer_status = ?", "Reachable", "Registered").Find(&users)
 
     return users
 }
 
-func GetAutodialUser(user string) DialerUser {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        log.Fatal(err)
-    }
-
+func (d *DB) GetAutodialUser(user string) DialerUser {
     u := DialerUser{}
     //query.Table("dialer_users").Where("peer = ?", user).Find(&u)
-    query.Model(&DialerUser{}).Where("peer = ?", user).Find(&u)
+    d.Model(&DialerUser{}).Where("peer = ?", user).Find(&u)
 
     return u
 }
 
-func DeleteMSISDNOlderThenWeek() {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        log.Fatalf("error to delete racords older then 7 days: %s", err)
-    }
-
-    query.Delete(&MsisdnList{}, "time < DATE(NOW()) - INTERVAL 7 DAY")
+func (d *DB) DeleteMSISDNOlderThenWeek() {
+    d.Delete(&MsisdnList{}, "time < DATE(NOW()) - INTERVAL 7 DAY")
 }
-func UpdatePeerStatus(user, status, action, exten string) {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-    }
-
+func (d *DB) UpdatePeerStatus(user, status, action, exten string) {
     userFiledsUpdate := make(map[string]interface{})
     userFiledsUpdate["peer_status"] = status
     if action != "" {
@@ -137,21 +119,16 @@ func UpdatePeerStatus(user, status, action, exten string) {
     }
 
     userFiledsUpdate["time"] = time.Now().UTC()
-    query.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
+    d.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
 }
 
-func ProcesseMsisdn(callerIdNum string) string {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-    }
-
-    tx := query.Begin()
+func (d *DB) ProcessedMsisdn(callerIdNum string) string {
+    tx := d.Begin()
 
     msisdn := &MsisdnList{}
 
     if err := tx.Raw(
-        "SELECT * FROM `dialer_msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
+        "SELECT * FROM `msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
         "", "recall").
         Scan(msisdn).
         Error; err != nil {
@@ -160,7 +137,7 @@ func ProcesseMsisdn(callerIdNum string) string {
         return ""
     }
 
-    if err = tx.Model(&MsisdnList{}).Where("id = ?", msisdn.ID).Updates(map[interface{}]interface{}{
+    if err := tx.Model(&MsisdnList{}).Where("id = ?", msisdn.ID).Updates(map[interface{}]interface{}{
         "status":        "progress",
         "caller_id_num": callerIdNum,
         "time_called":   time.Now().UTC(),
@@ -177,14 +154,11 @@ func ProcesseMsisdn(callerIdNum string) string {
     return msisdn.Msisdn
 }
 
-func UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channel, uniqueid string) {
+func (d *DB) UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channel, uniqueid string) {
+    var err error
     userToIdCopy := userToId[callerIDNum]
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-    }
 
-    tx := query.Begin()
+    tx := d.Begin()
 
     xlog.Debugf(
         "UpdateAfterHangup: callerIDNum: %s, callerIDName: %s, cause: %s, causeTxt: %s, event: %s, channel: %s, uniqueid: %s",
@@ -236,36 +210,56 @@ func UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channe
             tx.Rollback()
         }
     }
-
     tx.Commit()
 }
 
-func GetMsisdnListWithPriority() (*[]MsisdnList, error) {
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-        return nil, err
-    }
-
+func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
-    query.Preload("Priority").Find(list)
+    d.Preload("Priority").Find(list)
 
     return list, nil
 }
 
-func AddNewNumbers(numbers []string) error {
+func (d *DB) GetMsisdnListInProgress() (*[]MsisdnList, error) {
+    list := new([]MsisdnList)
+    err := d.getMsisdnInProgressDB(list).Error
+    return list, err
+}
 
-    query, err := Connect(config.GetConfig())
-    if err != nil {
-        xlog.Fatal(err)
-        return err
+func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (*[]MsisdnList, error) {
+    list := new([]MsisdnList)
+    err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
+    return list, err
+}
+
+func (d *DB) getPreloadPriorityDB() *gorm.DB {
+    return d.Preload("Priority")
+}
+
+func (d *DB) getMsisdnInProgressDB(list *[]MsisdnList) *gorm.DB {
+    return d.getPreloadPriorityDB().
+        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+}
+
+func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page int) *gorm.DB {
+    if row == 0 {
+        row = defaultMsisdnRowsCount
     }
+    if page != 0 {
+        page = page - 1
+    }
+    return d.getPreloadPriorityDB().Limit(row).Offset(page).Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+}
 
+func (d *DB) AddNewNumbers(numbers []string) error {
     for _, number := range numbers {
-        if err := query.Create(&MsisdnList{Msisdn: number, Priority: &MsisdnPriority{}}).Error; err != nil {
+        if err := d.Create(&MsisdnList{Msisdn: number, Priority: &MsisdnPriority{}}).Error; err != nil {
             return err
         }
     }
-
     return nil
+}
+
+func GetDB() *DB {
+    return db
 }
