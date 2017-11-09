@@ -25,6 +25,10 @@ type response struct {
     Result interface{} `json:"result"`
 }
 
+type msisdnPaging struct {
+    Total   int                    `json:"total"`
+    Records *[]database.MsisdnList `json:"records"`
+}
 const (
     CONTENT_TYPE = "application/json"
 )
@@ -112,11 +116,6 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     a.print(w, r, list)
 }
 
-type MsisdnPaging struct {
-    Total   int                    `json:"total"`
-    Records *[]database.MsisdnList `json:"records"`
-}
-
 // defaults: page=20; if limit=0 - show all records
 func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
     var page, limit, count int
@@ -152,7 +151,7 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
 
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
-    a.print(w, r, MsisdnPaging{Total: count, Records: list})
+    a.print(w, r, msisdnPaging{Total: count, Records: list})
 }
 
 // simple check which improve, that server is running
