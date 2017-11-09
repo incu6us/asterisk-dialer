@@ -118,13 +118,13 @@ func (d *DB) UpdatePeerStatus(user, status, action, exten string) {
     d.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
 }
 
-func (d *DB) ProcesseMsisdn(callerIdNum string) string {
+func (d *DB) ProcessedMsisdn(callerIdNum string) string {
     tx := d.Begin()
 
     msisdn := &MsisdnList{}
 
     if err := tx.Raw(
-        "SELECT * FROM `dialer_msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
+        "SELECT * FROM `msisdn_lists` WHERE status = ? or status = ? LIMIT 1 FOR UPDATE",
         "", "recall").
         Scan(msisdn).
         Error; err != nil {
@@ -214,6 +214,12 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     d.Preload("Priority").Find(list)
 
     return list, nil
+}
+
+func (d *DB) GetMsisdnListInProgress() (*[]MsisdnList, error) {
+    list := new([]MsisdnList)
+    err := d.Preload("Priority").Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall").Error
+    return list, err
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {

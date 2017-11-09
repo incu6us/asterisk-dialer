@@ -16,7 +16,7 @@ import (
 )
 
 type ApiHandler struct {
-    ContentType string
+    DefaultContentType string
     db          *database.DB
 }
 
@@ -30,7 +30,7 @@ const (
 
 var (
     once    sync.Once
-    handler *ApiHandler
+    handler ApiHandler
     conf    = config.GetConfig()
 )
 
@@ -45,31 +45,31 @@ func (a *ApiHandler) Test(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
 
     //xlog.Infof("MSISDN: %s", database.ProcesseMsisdn())
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, vars)
 }
 
 func (a *ApiHandler) Start(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, dialer.GetDialer().StartDialing())
 }
 
 func (a *ApiHandler) Stop(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, dialer.GetDialer().StopDialing())
 }
 
 func (a *ApiHandler) DialerStatus(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, dialer.GetDialer().GetDialerStatus())
 }
 
 func (a *ApiHandler) GetRegisteredUsers(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, a.db.GetRegisteredUsers())
 }
@@ -92,12 +92,12 @@ func (a *ApiHandler) UploadMSISDNList(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusCreated)
     a.print(w, r, "Numbers added")
 }
 
-func (a *ApiHandler) GetMsisdnListWithPriority(w http.ResponseWriter, r *http.Request) {
+func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     list, err := a.db.GetMsisdnListWithPriority()
     if err != nil {
         xlog.Errorf("get msisdn list with priority error: %s", err)
@@ -106,24 +106,39 @@ func (a *ApiHandler) GetMsisdnListWithPriority(w http.ResponseWriter, r *http.Re
         return
     }
 
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
+    w.WriteHeader(http.StatusOK)
+    a.print(w, r, list)
+}
+
+func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
+    list, err := a.db.GetMsisdnListInProgress()
+    if err != nil {
+        xlog.Errorf("get msisdn list with priority error: %s", err)
+        w.WriteHeader(http.StatusInternalServerError)
+        a.print(w, r, err)
+        return
+    }
+
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, list)
 }
 
 // simple check which improve, that server is running
 func (a *ApiHandler) Ready(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", a.ContentType)
+    w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
     a.print(w, r, "Service is up and running")
 }
 
 func InitHandlers(db *database.DB) {
     once.Do(func() {
-        handler = &ApiHandler{ContentType: CONTENT_TYPE, db: db}
+        xlog.Debugf("DB -> %#v", db)
+        handler = ApiHandler{DefaultContentType: CONTENT_TYPE, db: db}
     })
 }
 
 func GetHandler() *ApiHandler {
-    return handler
+    return &handler
 }

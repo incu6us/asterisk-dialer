@@ -162,7 +162,7 @@ func (a *Dialer) CallToUser(userID string) (map[string]string, error) {
         return nil, errors.New("already calling by dialer")
     }
 
-    if msisdn := a.db.ProcesseMsisdn(userID); msisdn != "" {
+    if msisdn := a.db.ProcessedMsisdn(userID); msisdn != "" {
         userIsCalling[userID] = true
         xlog.Debugf("Calling to %s with exten: %s", userID, msisdn)
 
