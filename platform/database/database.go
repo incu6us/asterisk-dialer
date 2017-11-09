@@ -220,22 +220,16 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     return list, nil
 }
 
-func (d *DB) GetMsisdnListInProgress() (*[]MsisdnList, error) {
+func (d *DB) GetMsisdnListInProgress() (int, *[]MsisdnList, error) {
     list := new([]MsisdnList)
     err := d.getMsisdnInProgressDB(list).Error
-    return list, err
+    return len(*list), list, err
 }
 
-func (d *DB) GetMsisdnCount() int {
-    var count int
-    d.getMsisdnInProgressDB(&[]MsisdnList{}).Count(&count)
-    return count
-}
-
-func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (*[]MsisdnList, error) {
+func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (int, *[]MsisdnList, error) {
     list := new([]MsisdnList)
     err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
-    return list, err
+    return len(*list), list, err
 }
 
 func (d *DB) getPreloadPriorityDB() *gorm.DB {

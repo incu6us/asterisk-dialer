@@ -119,7 +119,7 @@ type MsisdnPaging struct {
 
 // defaults: page=20; if limit=0 - show all records
 func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
-    var page, limit int
+    var page, limit, count int
     var list *[]database.MsisdnList
     var err error
     vars := r.URL.Query() // []string
@@ -137,11 +137,11 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
             }
         }
     }
-    count := a.db.GetMsisdnCount()
+
     if limit == 0 {
-        list, err = a.db.GetMsisdnListInProgress()
+        count, list, err = a.db.GetMsisdnListInProgress()
     } else {
-        list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page)
+        count, list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page)
     }
     if err != nil {
         xlog.Errorf("get msisdn list with priority error: %s", err)
