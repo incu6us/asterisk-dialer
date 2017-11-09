@@ -14,6 +14,8 @@ import (
 	"github.com/incu6us/asterisk-dialer/utils/config"
 )
 
+// TODO: make user registration without start state of dialer
+
 type Dialer struct {
 	dialerStatus        bool
 	amiConnectionStatus bool

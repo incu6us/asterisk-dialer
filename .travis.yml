@@ -12,8 +12,8 @@ before_install:
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
   - sudo apt-get update
   - sudo apt-get install yarn
-  - yarn install
-  - yarn build
+  - cd ui && yarn install
+  - cd ui && yarn build
 
 script:
   - go test -v $(glide novendor)
