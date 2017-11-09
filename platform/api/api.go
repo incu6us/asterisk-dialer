@@ -122,6 +122,13 @@ var apis = APIs{
         handler.GetHandler().GetMsisdnListInProgressUpdatePriority,
     },
     API{
+        "deleteMsisdn",
+        "DELETE",
+        "/msisdn",
+        "/inProgress/{id}",
+        handler.GetHandler().DeleteMsisdn,
+    },
+    API{
         "test",
         "GET",
         "",

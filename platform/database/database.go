@@ -261,14 +261,20 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
 }
 
 func (d *DB) UpdatePriority(id, priority int) error {
-    if priority > 10 && priority < 0 {
-        return errors.New("Priority can't be more then 10")
+    if priority > 10 && priority < 0 && id < 0{
+        return errors.New("Priority or ID error")
     }
 
-    err := d.Table("msisdn_priorities").Where("msisdn_id = ?", id).
+    return d.Table("msisdn_priorities").Where("msisdn_id = ?", id).
         Updates(map[string]interface{}{"priority": priority}).Error
+}
 
-    return err
+func (d *DB) DeleteMsisdn(id int) error {
+    if id < 0{
+        return errors.New("ID can't be less then 0")
+    }
+
+    return d.Delete(&MsisdnList{}, "id = ?", id).Error
 }
 
 func (d *DB) AddNewNumbers(numbers []string) error {

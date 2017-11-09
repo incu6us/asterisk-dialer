@@ -160,7 +160,7 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
     }
 }
 
-type MsisdnUpdatePriority struct{
+type MsisdnUpdatePriority struct {
     Priority int `json:"priority"`
 }
 
@@ -168,14 +168,14 @@ func (a *ApiHandler) GetMsisdnListInProgressUpdatePriority(w http.ResponseWriter
     idVar, ok := mux.Vars(r)["id"]
     if !ok {
         w.WriteHeader(http.StatusBadRequest)
-        a.print(w,r, response{errors.New("id is not set")})
+        a.print(w, r, response{errors.New("id is not set")})
         return
     }
     id, err := strconv.Atoi(idVar)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         xlog.Errorf("can't read id var: %s", err)
-        a.print(w,r, response{err})
+        a.print(w, r, response{err})
         return
     }
     prior := new(MsisdnUpdatePriority)
@@ -183,7 +183,7 @@ func (a *ApiHandler) GetMsisdnListInProgressUpdatePriority(w http.ResponseWriter
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         xlog.Errorf("can't read data from body: %s", err)
-        a.print(w,r, response{err})
+        a.print(w, r, response{err})
         return
     }
 
@@ -191,14 +191,37 @@ func (a *ApiHandler) GetMsisdnListInProgressUpdatePriority(w http.ResponseWriter
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         xlog.Errorf("can't serialize data from bytes: %s", err)
-        a.print(w,r, response{err})
+        a.print(w, r, response{err})
         return
     }
 
     if err = a.db.UpdatePriority(id, prior.Priority); err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         xlog.Errorf("can't update priority: %s", err)
-        a.print(w,r, response{err})
+        a.print(w, r, response{err})
+        return
+    }
+    w.WriteHeader(http.StatusNoContent)
+}
+
+func (a *ApiHandler) DeleteMsisdn(w http.ResponseWriter, r *http.Request) {
+    idVar, ok := mux.Vars(r)["id"]
+    if !ok {
+        w.WriteHeader(http.StatusBadRequest)
+        a.print(w, r, response{errors.New("id is not set")})
+        return
+    }
+    id, err := strconv.Atoi(idVar)
+    if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        xlog.Errorf("can't read id var: %s", err)
+        a.print(w, r, response{err})
+        return
+    }
+    if err := a.db.DeleteMsisdn(id); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        xlog.Errorf("can't delete item: %s", err)
+        a.print(w, r, response{err})
         return
     }
     w.WriteHeader(http.StatusNoContent)
