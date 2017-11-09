@@ -261,7 +261,7 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page i
 }
 
 func (d *DB) UpdatePriority(id, priority int) error {
-    if priority > 10 && priority < 0 && id < 0 {
+    if priority > 10 && priority < 1 && id < 0 {
         return errors.New("Priority or ID error")
     }
 
