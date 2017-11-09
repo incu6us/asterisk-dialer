@@ -34,7 +34,7 @@ func main() {
 	if err = dialerInstance.Connect(); err != nil {
 		xlog.Errorf("Error: %s", err)
 	}
-	dialerInstance.StartDialing()
+	//dialerInstance.StartDialing()
 
 	srv := &http.Server{
 		Addr: conf.General.Listen,
