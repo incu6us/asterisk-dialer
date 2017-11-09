@@ -7,6 +7,12 @@ branches:
   only:
     - master
 
+before_install:
+  - apt-get update
+  - apt-get install nodejs yarn
+  - yarn install
+  - yarn build
+
 script:
   - go test -v $(glide novendor)
   - go build -v .
