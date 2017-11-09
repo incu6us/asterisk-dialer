@@ -14,7 +14,7 @@ class AppStore extends ReduceStore {
             paging: {
                 total: null,
                 currentPage: 1,
-                numPerPage: 10,
+                numPerPage: 20,
             },
             isAppStarted: false,
             isAppStopped: false,
@@ -31,7 +31,6 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
-                console.log('action ->>', action.data.result);
                 const callInProgressList = action.data.result.map(item => {
                     item.priority = item.priority.priority;
                     return item;

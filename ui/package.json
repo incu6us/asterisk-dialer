@@ -6,7 +6,7 @@
   "author": "dmitryk-dk",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf ./build && NODE_ENV=development webpack",
+    "build": "rm -rf ./build && NODE_ENV=production webpack",
     "watch": "rm -rf ./build && NODE_ENV=development webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
