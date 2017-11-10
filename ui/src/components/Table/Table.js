@@ -66,7 +66,7 @@ export default class Table extends React.Component {
             case CONSTS.CHANGE_PRIORITY:
                 return <div>
                     {
-                        <div>
+                        <div className={'app-table-buttons_wrapper'}>
                             <button
                                 className={'app-button app-button_success app-button_success__small app-button_up'}
                                 onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}

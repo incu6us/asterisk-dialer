@@ -155,6 +155,11 @@ textarea {
       max-height: 400px;
       overflow-y: scroll;
     }
+    &-buttons {
+      &_wrapper {
+        width: 40px;
+      }
+    }
   }
   &-input {
     &_hasError {
