@@ -22,15 +22,17 @@ class App extends Component {
         }
     }
 
-    componentWillUpdate(newProps, newState) {
-        if (newState.dialerLists.length === 0) {
-            setInterval(()=>actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]), 1000);
-        }
-    }
-
     componentDidMount(){
+        const {dialerLists} = this.state;
+        let timer = null;
         setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
-        setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 2000);
+        setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
+        if (dialerLists.length === 0) {
+             timer = setInterval(()=>actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]), 2000);
+        } else {
+            clearInterval(timer)
+        }
+
     }
 
     render() {
