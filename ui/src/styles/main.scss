@@ -121,6 +121,10 @@ textarea {
       width: 50%;
       margin: 30px auto;
     }
+    &_up {
+      margin-bottom: 3px;
+      padding: 0.85em 1.3em
+    }
     &_success {
       background-color: #44D97A;
       &:disabled {

@@ -85,29 +85,12 @@ class AppStore extends ReduceStore {
                     ...updateStatus
                 };
 
-            case ACTIONS.CHANGE_PRIORITY:
-                const updateByChangePriority = {
-                    dialerLists: [
-                        ...state.dialerLists.map(dialer => {
-                            if (dialer.id === action.id) {
-                                dialer.isChanging = true;
-                            }
-                            return dialer;
-                        })
-                    ]
-                };
-                return {
-                    ...state,
-                    ...updateByChangePriority
-                };
-
             case ACTIONS.SUBMIT_CHANGE_PRIORITY_SUCCESS:
                 const updateBysubmitPriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
                             if (dialer.id === action.id) {
                                 dialer.priority = action.priority;
-                                dialer.isChanging = false;
                             }
                             return dialer;
                         })
@@ -116,22 +99,6 @@ class AppStore extends ReduceStore {
                 return {
                     ...state,
                     ...updateBysubmitPriority
-                };
-
-            case ACTIONS.CHANGE_PRIORITY_CANCEL:
-                const updateByCancelPriority = {
-                    dialerLists: [
-                        ...state.dialerLists.map(dialer => {
-                            if (dialer.id === action.id) {
-                                dialer.isChanging = false;
-                            }
-                            return dialer;
-                        })
-                    ]
-                };
-                return {
-                    ...state,
-                    ...updateByCancelPriority
                 };
 
             case ACTIONS.PAGING_CHANGE_SUCCESS:

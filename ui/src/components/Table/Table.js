@@ -60,40 +60,22 @@ export default class Table extends React.Component {
             case CHANGE_PRIORITY:
                 return <div>
                     {
-                        field.isChanging ?
-                            <div>
-                                <label htmlFor="">
-                                    Add new priority
-                                    <input
-                                        type="text"
-                                        value={priority}
-                                        name='changePriority'
-                                        className={isError ? 'app-input_hasError': ''}
-                                        onChange={(e) => this._handlePriorityChange(e)}
-                                    />
-                                    {
-                                        isError ?
-                                            <small className={'help-text_error'}>
-                                                Please enter number 1 - 10
-                                            </small> : null
-                                    }
-                                </label>
-                                <Button
-                                    className={'app-button app-button_success app-button_success__small'}
-                                    inscription={'Submit'}
-                                    onClick={()=>this._handlePrioritySubmit(field.id, priority)}
-                                />
-                                <Button
-                                    className={'app-button app-button_alert app-button_alert__small'}
-                                    inscription={'Cancel'}
-                                    onClick={()=>tableActions.cancelChangePriority(field.id)}
-                                />
-                            </div>:
-                            <Button
-                                className={'app-button app-button_success app-button_success__small'}
-                                inscription={'Change Priority'}
-                                onClick={()=>tableActions.changePriority(field.id)}
-                            />
+                        <div>
+                            <button
+                                className={'app-button app-button_success app-button_success__small app-button_up'}
+                                onClick={()=>this._handlePriorityChangeUp(field.id, field.priority)}
+                                disabled={field.priority === 10}
+                            >
+                                &#x2b06;
+                            </button>
+                            <button
+                                className={'app-button app-button_delete app-button_success__small'}
+                                onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}
+                                disabled={field.priority === 1}
+                            >
+                                &#x2b07;
+                            </button>
+                        </div>
                     }
                 </div>;
             default:
@@ -101,30 +83,18 @@ export default class Table extends React.Component {
         }
     };
 
-    _handlePriorityChange = ({target}) => {
-        const isValid = numbers(target.value);
-        if ((isValid && target.value <= 10) || !target.value) {
-            this.setState(state => ({
-                ...state,
-                priority: target.value,
-                isError: false,
-            }));
-        } else {
-            this.setState(state => ({
-                ...state,
-                isError: true
-            }));
-        }
+    _handlePriorityChangeUp = (id, priority) => {
+        const {tableActions} = this.props;
+        const updatedPriority = priority + 1;
+        tableActions.submitPriority(id, updatedPriority)
     };
 
-    _handlePrioritySubmit = (id, priority) => {
+    _handlePriorityChangeDown = (id, priority) => {
         const {tableActions} = this.props;
-        tableActions.submitPriority(id, Number(priority))
-            .then(() => this.setState(state => ({
-                ...state,
-                priority: '',
-            })))
-    }
+        const updatedPriority = priority - 1;
+        tableActions.submitPriority(id, updatedPriority)
+    };
+
 }
 
 
