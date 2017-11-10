@@ -22,6 +22,11 @@ class App extends Component {
         }
     }
 
+    shouldComponentUpdate (newProps, newState) {
+        const {dialerLists} = newState;
+        return dialerLists.length === 0;
+    }
+
     componentDidMount(){
         const {dialerLists} = this.state;
         setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
