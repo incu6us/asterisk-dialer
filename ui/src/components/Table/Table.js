@@ -54,7 +54,8 @@ export default class Table extends React.Component {
             case DELETE:
                 return <Button
                     className={'app-button app-button_delete app-button_delete__small'}
-                    inscription={'Delete order'}
+                    inscription={'Delete record'}
+                    onClick={() => tableActions.deleteRecord(field.id)}
                 />;
             case CHANGE_PRIORITY:
                 return <div>
@@ -79,19 +80,19 @@ export default class Table extends React.Component {
                                 </label>
                                 <Button
                                     className={'app-button app-button_success app-button_success__small'}
-                                    inscription={'Submit Priority'}
-                                    onClick={()=>tableActions.submitPriority(field.msisdn, priority)}
+                                    inscription={'Submit'}
+                                    onClick={()=>this._handlePrioritySubmit(field.id, priority)}
                                 />
                                 <Button
                                     className={'app-button app-button_alert app-button_alert__small'}
                                     inscription={'Cancel'}
-                                    onClick={()=>tableActions.cancelChangePriority(field.msisdn)}
+                                    onClick={()=>tableActions.cancelChangePriority(field.id)}
                                 />
                             </div>:
                             <Button
                                 className={'app-button app-button_success app-button_success__small'}
                                 inscription={'Change Priority'}
-                                onClick={() => tableActions.changePriority(field.msisdn)}
+                                onClick={()=>tableActions.changePriority(field.id)}
                             />
                     }
                 </div>;
@@ -114,6 +115,15 @@ export default class Table extends React.Component {
                 isError: true
             }));
         }
+    }
+
+    _handlePrioritySubmit = (id, priority) => {
+        const {tableActions} = this.props;
+        tableActions.submitPriority(id, priority)
+            .then(() => this.setState(state => ({
+                ...state,
+                priority: '',
+            })))
     }
 }
 

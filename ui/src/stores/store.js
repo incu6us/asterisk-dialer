@@ -14,7 +14,7 @@ class AppStore extends ReduceStore {
             paging: {
                 total: null,
                 currentPage: 1,
-                numPerPage: 10,
+                numPerPage: 20,
             },
             isAppStarted: false,
             isAppStopped: false,
@@ -23,10 +23,6 @@ class AppStore extends ReduceStore {
 
     reduce (state, action) {
         switch (action.type) {
-            case ACTIONS.APP_INIT:
-                return {
-                    ...state,
-                };
 
             case ACTIONS.REGISTERED_USERS_SUCCESS:
                 return {
@@ -35,13 +31,17 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.CALL_IN_PROGRESS_SUCCESS:
+                const callInProgressList = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
                     paging: {
                         ...state.paging,
                         total: action.data.total,
                     },
-                    dialerLists: action.data.result
+                    dialerLists: callInProgressList
                 };
 
             case ACTIONS.DIALER_START_SUCCESS:
@@ -72,11 +72,24 @@ class AppStore extends ReduceStore {
                     isAppStopped: false,
                 };
 
+            case ACTIONS.DIALER_STATUS_SUCCESS:
+                const updateStatus = action.data.result ? {
+                    isAppStarted: true,
+                    isAppStopped: false,
+                } : {
+                    isAppStarted: false,
+                    isAppStopped: true,
+                };
+                return {
+                    ...state,
+                    ...updateStatus
+                };
+
             case ACTIONS.CHANGE_PRIORITY:
                 const updateByChangePriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
-                            if (dialer.msisdn === action.msisdn) {
+                            if (dialer.id === action.id) {
                                 dialer.isChanging = true;
                             }
                             return dialer;
@@ -88,11 +101,12 @@ class AppStore extends ReduceStore {
                     ...updateByChangePriority
                 };
 
-            case ACTIONS.CHANGE_PRIORITY_SUBMIT:
+            case ACTIONS.SUBMIT_CHANGE_PRIORITY_SUCCESS:
                 const updateBysubmitPriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
-                            if (dialer.msisdn === action.msisdn) {
+                            if (dialer.id === action.id) {
+                                dialer.priority = action.priority;
                                 dialer.isChanging = false;
                             }
                             return dialer;
@@ -108,7 +122,7 @@ class AppStore extends ReduceStore {
                 const updateByCancelPriority = {
                     dialerLists: [
                         ...state.dialerLists.map(dialer => {
-                            if (dialer.msisdn === action.msisdn) {
+                            if (dialer.id === action.id) {
                                 dialer.isChanging = false;
                             }
                             return dialer;
@@ -121,14 +135,26 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.PAGING_CHANGE_SUCCESS:
+                const pagingChangeList = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
-                    dialerLists: action.data.result,
+                    dialerLists: pagingChangeList,
                     paging: {
                         ...state.paging,
                         currentPage: action.page,
                         total: action.data.total,
                     }
+                };
+
+            case ACTIONS.DELETE_RECORD_SUCCESS:
+                return {
+                    ...state,
+                    dialerLists: [
+                        ...state.dialerLists.filter(dialer => dialer.id !== action.id)
+                    ]
                 };
 
             default:
