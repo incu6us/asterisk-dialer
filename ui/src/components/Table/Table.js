@@ -115,11 +115,11 @@ export default class Table extends React.Component {
                 isError: true
             }));
         }
-    }
+    };
 
     _handlePrioritySubmit = (id, priority) => {
         const {tableActions} = this.props;
-        tableActions.submitPriority(id, priority)
+        tableActions.submitPriority(id, Number(priority))
             .then(() => this.setState(state => ({
                 ...state,
                 priority: '',
