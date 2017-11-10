@@ -121,14 +121,24 @@ textarea {
       width: 50%;
       margin: 30px auto;
     }
+    &_up {
+      margin-bottom: 3px;
+      padding: 0.85em 1.3em
+    }
     &_success {
       background-color: #44D97A;
+      &:disabled {
+        background-color: #999999;
+      }
       &__small {
         padding: 5px;
       }
     }
     &_delete{
       background-color: #CA4C3C;
+      &:disabled {
+        background-color: #999999;
+      }
       &__small {
         padding: 5px;
       }
@@ -219,6 +229,7 @@ table {
   td {
     line-height: 15px;
     padding: 8px 11px 11px;
+    font-size: 12px;
   }
   tr:last-child {
     td {

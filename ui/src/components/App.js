@@ -8,6 +8,7 @@ import {Dialer} from './Dialer/Dialer';
 import appStore from '../stores/store';
 // actions
 import * as actions from '../actions/actions'
+import * as CONSTS from '../utils/consts';
 
 class App extends Component {
 
@@ -19,6 +20,17 @@ class App extends Component {
         return {
             ...appStore.getState()
         }
+    }
+
+    componentWillUpdate(newProps, newState) {
+        if (newState.dialerLists.length === 0) {
+            setInterval(()=>actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]), 1000);
+        }
+    }
+
+    componentDidMount(){
+        setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
+        setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 2000);
     }
 
     render() {
