@@ -171,6 +171,7 @@ func (a *ApiHandler) GetMsisdnListInProgressUpdatePriority(w http.ResponseWriter
         a.print(w, r, response{errors.New("id is not set")})
         return
     }
+    xlog.Infof("ID: %#v", idVar)
     id, err := strconv.Atoi(idVar)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
@@ -186,7 +187,7 @@ func (a *ApiHandler) GetMsisdnListInProgressUpdatePriority(w http.ResponseWriter
         a.print(w, r, response{err})
         return
     }
-
+    xlog.Infof("BODY: %#v", string(data))
     err = json.Unmarshal(data, prior)
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
