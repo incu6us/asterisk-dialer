@@ -16,12 +16,7 @@ export default class Table extends React.Component {
                 {this._makeHead( columns )}
                 </thead>
                 <tbody>
-                {
-                    fields.length > 0 ?
-                        this._makeBody( fields, columns, tableActions )
-                        :
-                        this._makeButtons(fields, columns, tableActions)
-                }
+                {this._makeBody( fields, columns, tableActions )}
                 </tbody>
             </table>
         )
