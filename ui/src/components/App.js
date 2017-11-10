@@ -29,12 +29,10 @@ class App extends Component {
 
     componentDidUpdate (prevProps, prevState) {
         const {dialerLists} = this.state;
-        let timer = null;
         console.log('length ->>', dialerLists.length);
         if (dialerLists.length === 0) {
-            timer = setInterval(()=>actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]), 2000);
+            setInterval(()=>actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]), 2000);
         }
-        clearInterval(timer)
     }
 
     render() {
