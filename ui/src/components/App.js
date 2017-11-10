@@ -25,6 +25,10 @@ class App extends Component {
     componentDidMount(){
         setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
         setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
+
+        if (this.state.dialerLists.length === 0) {
+            actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]);
+        }
     }
 
     render() {
