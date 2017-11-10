@@ -23,8 +23,8 @@ class App extends Component {
     }
 
     shouldComponentUpdate (newProps, newState) {
-        const {dialerLists} = newState;
-        return dialerLists.length === 0;
+        console.log(newState.dialerLists.length);
+        return newState.dialerLists.length === 0;
     }
 
     componentDidMount(){
