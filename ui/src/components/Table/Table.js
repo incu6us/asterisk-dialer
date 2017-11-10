@@ -7,11 +7,6 @@ export default class Table extends React.Component {
 
     constructor ( props ) {
         super( props );
-
-        this.state={
-            priority: '',
-            isError: false,
-        }
     }
 
     render () {
@@ -49,7 +44,6 @@ export default class Table extends React.Component {
     );
 
     _makeButtons = (field, column, tableActions) => {
-        const {priority, isError} = this.state;
         switch (column) {
             case DELETE:
                 return <Button
