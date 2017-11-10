@@ -23,7 +23,6 @@ class App extends Component {
     }
 
     componentWillUpdate(newProps, newState) {
-        console.log(newState);
         if (newState.dialerLists.length === 0) {
             actions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS]);
         }
