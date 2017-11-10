@@ -14,6 +14,7 @@ export const DialerTable = ({
             fields={orders}
             columns={columns}
             tableActions={actions}
+            isDialer={true}
         />
         <Paging
             baseClassName={'paging'}
