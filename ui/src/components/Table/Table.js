@@ -30,7 +30,7 @@ export default class Table extends React.Component {
     );
 
     _makeBody = (fields, columns, tableActions) => {
-        if (fields.length === 0) {
+        if (fields.length === 0 && this.props.isDialer) {
             return (
                 <tr>
                     <td colSpan={Object.keys( columns ).length}>
@@ -38,7 +38,7 @@ export default class Table extends React.Component {
                             className={'app-button app-button_success'}
                             inscription={'Update table data'}
                             onClick={() => tableActions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS])}
-                        />;
+                        />
                     </td>
                 </tr>
             );
@@ -70,14 +70,14 @@ export default class Table extends React.Component {
                             <button
                                 className={'app-button app-button_success app-button_success__small app-button_up'}
                                 onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}
-                                disabled={field.priority === 10}
+                                disabled={field.priority === 1}
                             >
                                 &#x2b06;
                             </button>
                             <button
                                 className={'app-button app-button_delete app-button_success__small'}
                                 onClick={()=>this._handlePriorityChangeUp(field.id, field.priority)}
-                                disabled={field.priority === 1}
+                                disabled={field.priority === 10}
                             >
                                 &#x2b07;
                             </button>
