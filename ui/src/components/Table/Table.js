@@ -1,7 +1,6 @@
 import React from 'react';
 import {Button} from '../Button/Button';
-import {DELETE, CHANGE_PRIORITY} from '../../utils/consts';
-import {numbers} from "../../utils/validator";
+import * as CONSTS from '../../utils/consts';
 
 export default class Table extends React.Component {
 
@@ -17,7 +16,12 @@ export default class Table extends React.Component {
                 {this._makeHead( columns )}
                 </thead>
                 <tbody>
-                {this._makeBody( fields, columns, tableActions )}
+                {
+                    fields.length > 0 ?
+                        this._makeBody( fields, columns, tableActions )
+                        :
+                        this._makeButtons(fields, columns, tableActions)
+                }
                 </tbody>
             </table>
         )
@@ -30,41 +34,54 @@ export default class Table extends React.Component {
         </tr>
     );
 
-    _makeBody = (fields, columns, tableActions) => (
-        fields.map((field, i) =>
-            <tr key={i}>
-                {Object.keys(columns).map((column, i) => (
-                    <td key={i}>
-                        {field[column]}
-                        {this._makeButtons(field, column, tableActions)}
+    _makeBody = (fields, columns, tableActions) => {
+        if (fields.length === 0) {
+            return (
+                <tr>
+                    <td colSpan={Object.keys( columns ).length}>
+                        <Button
+                            className={'app-button app-button_success'}
+                            inscription={'Update table data'}
+                            onClick={() => tableActions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS])}
+                        />;
                     </td>
-                ))}
+                </tr>
+            );
+        }
+        return fields.map( ( field, i ) =>
+            <tr key={i}>
+                {Object.keys( columns ).map( ( column, i ) => (
+                    <td key={i}>
+                        {field[ column ]}
+                        {this._makeButtons( field, column, tableActions )}
+                    </td>
+                ) )}
             </tr>
         )
-    );
+    };
 
     _makeButtons = (field, column, tableActions) => {
         switch (column) {
-            case DELETE:
+            case CONSTS.DELETE:
                 return <Button
                     className={'app-button app-button_delete app-button_delete__small'}
                     inscription={'Delete record'}
                     onClick={() => tableActions.deleteRecord(field.id)}
                 />;
-            case CHANGE_PRIORITY:
+            case CONSTS.CHANGE_PRIORITY:
                 return <div>
                     {
                         <div>
                             <button
                                 className={'app-button app-button_success app-button_success__small app-button_up'}
-                                onClick={()=>this._handlePriorityChangeUp(field.id, field.priority)}
+                                onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}
                                 disabled={field.priority === 10}
                             >
                                 &#x2b06;
                             </button>
                             <button
                                 className={'app-button app-button_delete app-button_success__small'}
-                                onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}
+                                onClick={()=>this._handlePriorityChangeUp(field.id, field.priority)}
                                 disabled={field.priority === 1}
                             >
                                 &#x2b07;
