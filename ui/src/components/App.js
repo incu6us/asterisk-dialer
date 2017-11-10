@@ -27,7 +27,7 @@ class App extends Component {
         setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
     }
 
-    componentDidUpdate () {
+    componentDidUpdate (prevProps, prevState) {
         const {dialerLists} = this.state;
         let timer = null;
         console.log('length ->>', dialerLists.length);
