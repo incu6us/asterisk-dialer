@@ -22,15 +22,13 @@ class App extends Component {
         }
     }
 
-    shouldComponentUpdate (newProps, newState) {
-        console.log(newState.dialerLists.length);
-        return newState.dialerLists.length === 0;
-    }
-
     componentDidMount(){
-        const {dialerLists} = this.state;
         setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
         setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
+    }
+
+    componentDidUpdate () {
+        const {dialerLists} = this.state;
         let timer = null;
         console.log('length ->>', dialerLists.length);
         if (dialerLists.length === 0) {
