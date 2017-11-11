@@ -19,6 +19,7 @@ export const Dialer = ({
     deleteRecord,
     isAppStarted,
     isAppStopped,
+    urls
 }) => {
     return (
         <div className={'app-wrapper'}>
@@ -48,7 +49,16 @@ export const Dialer = ({
                     isDisabled={isAppStopped}
                 />
             </div>
-            <Table fields={operators} columns={CONSTS.COLUMNS}/>
+            <Table
+                fields={operators}
+                columns={CONSTS.COLUMNS}
+                tableActions={{}}
+                options={{
+                    paging,
+                    urls
+                }}
+                isDialer={false}
+            />
             {
                 paging.total === 0 ?
                     <div className="app-alert-box app-alert-box_warning">
@@ -67,7 +77,9 @@ export const Dialer = ({
             <DialerTable
                 orders={dialerLists}
                 columns={CONSTS.DIALER_COLUMNS}
-                paging={paging}
+                options={{
+                    paging,
+                }}
                 actions={{
                     pagingChange,
                     changePriority,
@@ -76,6 +88,7 @@ export const Dialer = ({
                     deleteRecord,
                     getCallInProgress,
                 }}
+                urls={urls}
             />
         </div>
     );

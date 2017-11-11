@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Container } from 'flux/utils';
 import {Dialer} from './Dialer/Dialer';
-
-
-
 // store
 import appStore from '../stores/store';
 // actions
@@ -22,7 +19,7 @@ class App extends Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount () {
         setInterval(()=> actions.getRegisteredUsers(CONSTS.API[CONSTS.REGISTERED_USERS]), 10000);
         setInterval(()=> actions.getDialerStatus(CONSTS.API[CONSTS.APP_STATUS]), 1000);
     }
