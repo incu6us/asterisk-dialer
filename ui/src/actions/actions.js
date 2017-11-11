@@ -63,13 +63,8 @@ export const stopDialer = (url) => {
         }))
 };
 
-export const pagingChange = (page) => {
-    const uri = CONSTS.getHostFn()
-        .replace('{API}', CONSTS.CALL_IN_PROGRESS);
-    const getParams = CONSTS.LIMIT_PARAMS
-        .replace('{limit}', CONSTS.DEFAULT_RECORDS)
-        .replace('{page}', page);
-    http.get(uri + getParams)
+export const pagingChange = (url, page) => {
+    http.get(url)
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.PAGING_CHANGE_SUCCESS,
             data,
@@ -81,9 +76,8 @@ export const pagingChange = (page) => {
         }))
 };
 
-export const submitPriority = (id, priority) => {
-    const url = CONSTS.getHostFn().replace('{API}', CONSTS.CALL_IN_PROGRESS) + `/${id}`;
-    http.put(url, {priority: priority})
+export const submitPriority = (url, id, priority) => {
+    http.put(url + `/${id}`, {priority: priority})
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.SUBMIT_CHANGE_PRIORITY_SUCCESS,
             id,
@@ -95,23 +89,8 @@ export const submitPriority = (id, priority) => {
         }))
 };
 
-export const cancelChangePriority = (id) => {
-    appDispatcher.dispatch({
-        type: ACTIONS.CHANGE_PRIORITY_CANCEL,
-        id
-    });
-};
-
-export const changePriority = (id) => {
-    appDispatcher.dispatch({
-        type: ACTIONS.CHANGE_PRIORITY,
-        id
-    });
-};
-
-export const deleteRecord = (id) => {
-    const url = CONSTS.getHostFn().replace('{API}', CONSTS.CALL_IN_PROGRESS) + `/${id}`;
-    http.del(url)
+export const deleteRecord = (url, id) => {
+    http.del(url + `/${id}`)
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.DELETE_RECORD_SUCCESS,
             id

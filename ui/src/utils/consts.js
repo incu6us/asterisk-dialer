@@ -48,12 +48,11 @@ export const getHostFn = () => {
 };
 
 export const DEFAULT_RECORDS = 20;
-export const DEFAULT_GET_PARAMS = LIMIT_PARAMS.replace('{limit}', DEFAULT_RECORDS).replace('{page}', 1);
 
 export const API = {
     [START]: getHostFn().replace('{API}', START),
     [STOP]: getHostFn().replace('{API}', STOP),
     [APP_STATUS]: getHostFn().replace('{API}', APP_STATUS),
     [REGISTERED_USERS]: getHostFn().replace('{API}', REGISTERED_USERS),
-    [CALL_IN_PROGRESS]: getHostFn().replace('{API}', CALL_IN_PROGRESS) + DEFAULT_GET_PARAMS,
+    [CALL_IN_PROGRESS]: getHostFn().replace('{API}', CALL_IN_PROGRESS),
 };

@@ -3,6 +3,7 @@ import { ReduceStore } from 'flux/utils';
 // consts
 import * as ACTIONS from '../actions/types';
 import appDispatcher from '../utils/dispatcher';
+import * as CONSTS from '../utils/consts';
 
 
 class AppStore extends ReduceStore {
@@ -18,6 +19,9 @@ class AppStore extends ReduceStore {
             },
             isAppStarted: false,
             isAppStopped: false,
+            urls: {
+                ...CONSTS.API
+            }
         };
     }
 
@@ -121,12 +125,16 @@ class AppStore extends ReduceStore {
                     ...state,
                     dialerLists: [
                         ...state.dialerLists.filter(dialer => dialer.id !== action.id)
-                    ]
+                    ],
+                    paging: {
+                        ...state.paging,
+                        total: state.paging.total - 1,
+                    }
                 };
 
             default:
                 return state;
-        };
+        }
     };
 }
 
