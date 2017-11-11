@@ -1,17 +1,11 @@
 import React from 'react';
 import {Button} from '../Button/Button';
-import {DELETE, CHANGE_PRIORITY} from '../../utils/consts';
-import {numbers} from "../../utils/validator";
+import * as CONSTS from '../../utils/consts';
 
 export default class Table extends React.Component {
 
     constructor ( props ) {
         super( props );
-
-        this.state={
-            priority: '',
-            isError: false,
-        }
     }
 
     render () {
@@ -35,64 +29,59 @@ export default class Table extends React.Component {
         </tr>
     );
 
-    _makeBody = (fields, columns, tableActions) => (
-        fields.map((field, i) =>
-            <tr key={i}>
-                {Object.keys(columns).map((column, i) => (
-                    <td key={i}>
-                        {field[column]}
-                        {this._makeButtons(field, column, tableActions)}
+    _makeBody = (fields, columns, tableActions) => {
+        if (fields.length === 0 && this.props.isDialer) {
+            return (
+                <tr>
+                    <td colSpan={Object.keys( columns ).length}>
+                        <Button
+                            className={'app-button app-button_success'}
+                            inscription={'Update table data'}
+                            onClick={() => tableActions.getCallInProgress(CONSTS.API[CONSTS.CALL_IN_PROGRESS])}
+                        />
                     </td>
-                ))}
+                </tr>
+            );
+        }
+        return fields.map( ( field, i ) =>
+            <tr key={i}>
+                {Object.keys( columns ).map( ( column, i ) => (
+                    <td key={i}>
+                        {field[ column ]}
+                        {this._makeButtons( field, column, tableActions )}
+                    </td>
+                ) )}
             </tr>
         )
-    );
+    };
 
     _makeButtons = (field, column, tableActions) => {
-        const {priority, isError} = this.state;
         switch (column) {
-            case DELETE:
+            case CONSTS.DELETE:
                 return <Button
                     className={'app-button app-button_delete app-button_delete__small'}
-                    inscription={'Delete order'}
+                    inscription={'Delete record'}
+                    onClick={() => tableActions.deleteRecord(field.id)}
                 />;
-            case CHANGE_PRIORITY:
+            case CONSTS.CHANGE_PRIORITY:
                 return <div>
                     {
-                        field.isChanging ?
-                            <div>
-                                <label htmlFor="">
-                                    Add new priority
-                                    <input
-                                        type="text"
-                                        value={priority}
-                                        name='changePriority'
-                                        className={isError ? 'app-input_hasError': ''}
-                                        onChange={(e) => this._handlePriorityChange(e)}
-                                    />
-                                    {
-                                        isError ?
-                                            <small className={'help-text_error'}>
-                                                Please enter number 1 - 10
-                                            </small> : null
-                                    }
-                                </label>
-                                <Button
-                                    className={'app-button app-button_success app-button_success__small'}
-                                    inscription={'Submit Priority'}
-                                    onClick={()=>tableActions.submitPriority(field.msisdn, priority)}
-                                />
-                                <Button
-                                    className={'app-button app-button_alert app-button_alert__small'}
-                                    inscription={'Cancel'}
-                                    onClick={()=>tableActions.cancelChangePriority(field.msisdn)}
-                                />
-                            </div>:
-                            <Button
-                                className={'app-button app-button_success app-button_success__small'}
-                                inscription={'Change Priority'}
-                                onClick={() => tableActions.changePriority(field.msisdn)}
-                            />
+                        <div className={'app-table-buttons_wrapper'}>
+                            <button
+                                className={'app-button app-button_success app-button_success__small app-button_up'}
+                                onClick={()=>this._handlePriorityChangeDown(field.id, field.priority)}
+                                disabled={field.priority === 1}
+                            >
+                                &#x2b06;
+                            </button>
+                            <button
+                                className={'app-button app-button_delete app-button_success__small'}
+                                onClick={()=>this._handlePriorityChangeUp(field.id, field.priority)}
+                                disabled={field.priority === 10}
+                            >
+                                &#x2b07;
+                            </button>
+                        </div>
                     }
                 </div>;
             default:
@@ -100,21 +89,18 @@ export default class Table extends React.Component {
         }
     };
 
-    _handlePriorityChange = ({target}) => {
-        const isValid = numbers(target.value);
-        if ((isValid && target.value <= 10) || !target.value) {
-            this.setState(state => ({
-                ...state,
-                priority: target.value,
-                isError: false,
-            }));
-        } else {
-            this.setState(state => ({
-                ...state,
-                isError: true
-            }));
-        }
-    }
+    _handlePriorityChangeUp = (id, priority) => {
+        const {tableActions} = this.props;
+        const updatedPriority = priority + 1;
+        tableActions.submitPriority(id, updatedPriority)
+    };
+
+    _handlePriorityChangeDown = (id, priority) => {
+        const {tableActions} = this.props;
+        const updatedPriority = priority - 1;
+        tableActions.submitPriority(id, updatedPriority)
+    };
+
 }
 
 

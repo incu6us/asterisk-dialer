@@ -13,8 +13,10 @@ export const Dialer = ({
     changePriority,
     submitPriority,
     cancelChangePriority,
+    getCallInProgress,
     startDialer,
     stopDialer,
+    deleteRecord,
     isAppStarted,
     isAppStopped,
 }) => {
@@ -47,6 +49,20 @@ export const Dialer = ({
                 />
             </div>
             <Table fields={operators} columns={CONSTS.COLUMNS}/>
+            {
+                paging.total === 0 ?
+                    <div className="app-alert-box app-alert-box_warning">
+                        You delete all data from Database.
+                        Please add data to database and press button ‘Update table data’
+                    </div>: null
+            }
+            {
+                dialerLists.length === 0 ?
+                    <div className="app-alert-box app-alert-box_warning">
+                        You delete some data from app.
+                        Please press button ‘Update table data’ and continue working.
+                    </div>: null
+            }
             <h2>Phone call orders</h2>
             <DialerTable
                 orders={dialerLists}
@@ -56,7 +72,9 @@ export const Dialer = ({
                     pagingChange,
                     changePriority,
                     submitPriority,
-                    cancelChangePriority
+                    cancelChangePriority,
+                    deleteRecord,
+                    getCallInProgress,
                 }}
             />
         </div>

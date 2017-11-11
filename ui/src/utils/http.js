@@ -26,8 +26,6 @@ export async function get (url) {
         url,
         {
             method: 'get',
-            //@TODO: need remove this method
-            mode: 'no-cors',
             credentials: 'same-origin',
             redirect: 'manual',
             headers: headers,
@@ -36,7 +34,7 @@ export async function get (url) {
     return await response.json();
 }
 
-export async function del (url, body) {
+export async function del (url) {
     const headers = {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type':     'application/json',
@@ -46,6 +44,23 @@ export async function del (url, body) {
         url,
         {
             method: 'delete',
+            credentials: 'same-origin',
+            redirect: 'manual',
+            headers: headers,
+        }
+    );
+}
+
+export async function put (url, body) {
+    const headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type':     'application/json',
+        'Accept':           'application/json',
+    };
+    return await fetch(
+        url,
+        {
+            method: 'put',
             credentials: 'same-origin',
             redirect: 'manual',
             headers: headers,
