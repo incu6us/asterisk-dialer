@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "errors"
     "io/ioutil"
+    "log"
     "net/http"
     "strconv"
     "sync"
@@ -107,7 +108,7 @@ func (a *ApiHandler) UploadMSISDNList(w http.ResponseWriter, r *http.Request) {
 func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
     list, err := a.db.GetMsisdnListWithPriority()
     if err != nil {
-        xlog.Errorf("get msisdn list with priority error: %s", err)
+        log.Printf("get msisdn list with priority error: %s", err)
         w.WriteHeader(http.StatusInternalServerError)
         a.print(w, r, err)
         return
@@ -121,6 +122,7 @@ func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
 // defaults: page=20; if limit=0 - show all records
 func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Request) {
     var page, limit, count int
+    var sortOrder, sortBy string
     var list *[]database.MsisdnList
     var err error
     vars := r.URL.Query() // []string
@@ -128,6 +130,9 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
         if len(varPage) > 0 {
             if page, err = strconv.Atoi(varPage[0]); err != nil {
                 xlog.Errorf("can't parse 'page' param from url: %s", err)
+                w.WriteHeader(http.StatusInternalServerError)
+                a.print(w, r, err)
+                return
             }
         }
     }
@@ -135,14 +140,39 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
         if len(varLimit) > 0 {
             if limit, err = strconv.Atoi(varLimit[0]); err != nil {
                 xlog.Errorf("can't parse 'limit' param from url: %s", err)
+                w.WriteHeader(http.StatusInternalServerError)
+                a.print(w, r, err)
+                return
             }
         }
     }
 
+    // return: sortBy, sortOrder
+    sortFn := func(values map[string][]string) (string, string) {
+        if sortOrderVar, ok := vars["sortOrder"]; ok {
+            if len(sortOrderVar) > 0 {
+                sortOrder = sortOrderVar[0]
+            }
+        }
+        if sortByVar, ok := vars["sortBy"]; ok {
+            if len(sortByVar) > 0 {
+                sortBy = sortByVar[0]
+            }
+        }
+        if sortBy == "" {
+            sortBy = "id"
+        }
+        if sortOrder == "" {
+            sortOrder = "asc"
+        }
+        return sortBy, sortOrder
+    }
+
+    sortBy, sortOrder = sortFn(vars)
     if limit == 0 {
-        count, list, err = a.db.GetMsisdnListInProgress()
+        count, list, err = a.db.GetMsisdnListInProgress(sortBy, sortOrder)
     } else {
-        count, list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page)
+        count, list, err = a.db.GetMsisdnListInProgressWithPagination(limit, page, sortBy, sortOrder)
     }
     if err != nil {
         xlog.Errorf("get msisdn list with priority error: %s", err)
