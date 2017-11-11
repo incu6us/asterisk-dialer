@@ -37,8 +37,10 @@ export default class Table extends React.Component {
             isDialer,
             options
         } = this.props;
+        console.log('tableActions->>', tableActions);
         const {urls, paging} = options;
         const {actions, updateCallUrl} = tableActions;
+        console.log('actions->>', actions);
         if (fields.length === 0 && isDialer) {
             return (
                 <tr>

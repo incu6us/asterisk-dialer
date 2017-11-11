@@ -133,7 +133,6 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.LIMIT_CHANGE_SUCCESS:
-                console.log(action.limit);
                 return {
                     ...state,
                     paging: {
