@@ -37,10 +37,8 @@ export default class Table extends React.Component {
             isDialer,
             options
         } = this.props;
-        console.log('tableActions->>', tableActions);
         const {urls, paging} = options;
-        const {actions, updateCallUrl} = tableActions;
-        console.log('actions->>', actions);
+        const {getCallInProgress, updateCallUrl} = tableActions;
         if (fields.length === 0 && isDialer) {
             return (
                 <tr>
@@ -49,7 +47,7 @@ export default class Table extends React.Component {
                             className={'app-button app-button_success'}
                             inscription={'Update table data'}
                             onClick={
-                                () => actions.getCallInProgress(
+                                () => getCallInProgress(
                                     updateCallUrl(
                                         urls[CONSTS.CALL_IN_PROGRESS],
                                         paging.currentPage,
@@ -77,13 +75,13 @@ export default class Table extends React.Component {
     _makeButtons = (field, column) => {
         const {tableActions, options} = this.props;
         const {urls} = options;
-        const {actions} = tableActions;
+        const {deleteRecord} = tableActions;
         switch (column) {
             case CONSTS.DELETE:
                 return <Button
                     className={'app-button app-button_delete app-button_delete__small'}
                     inscription={'Delete record'}
-                    onClick={() => actions.deleteRecord(urls[CONSTS.CALL_IN_PROGRESS], field.id)}
+                    onClick={() => deleteRecord(urls[CONSTS.CALL_IN_PROGRESS], field.id)}
                 />;
             case CONSTS.CHANGE_PRIORITY:
                 return <div>
@@ -113,18 +111,18 @@ export default class Table extends React.Component {
 
     _handlePriorityChangeUp = (id, priority) => {
         const {tableActions, options} = this.props;
-        const {actions} = tableActions;
+        const {submitPriority} = tableActions;
         const {urls} = options;
         const updatedPriority = priority + 1;
-        actions.submitPriority(urls[CONSTS.CALL_IN_PROGRESS], id, updatedPriority);
+        submitPriority(urls[CONSTS.CALL_IN_PROGRESS], id, updatedPriority);
     };
 
     _handlePriorityChangeDown = (id, priority) => {
         const {tableActions, options} = this.props;
-        const {actions} = tableActions;
+        const {submitPriority} = tableActions;
         const {urls} = options;
         const updatedPriority = priority - 1;
-        actions.submitPriority(urls[CONSTS.CALL_IN_PROGRESS], id, updatedPriority);
+        submitPriority(urls[CONSTS.CALL_IN_PROGRESS], id, updatedPriority);
     };
 
 }
