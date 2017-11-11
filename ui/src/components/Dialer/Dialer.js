@@ -12,9 +12,7 @@ export const Dialer = ({
     dialerLists,
     paging,
     pagingChange,
-    changePriority,
     submitPriority,
-    cancelChangePriority,
     getCallInProgress,
     startDialer,
     stopDialer,
@@ -102,9 +100,7 @@ export const Dialer = ({
                 }}
                 actions={{
                     pagingChange,
-                    changePriority,
                     submitPriority,
-                    cancelChangePriority,
                     deleteRecord,
                     getCallInProgress,
                     updateCallUrl
