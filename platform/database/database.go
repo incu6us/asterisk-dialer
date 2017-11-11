@@ -1,6 +1,7 @@
 package database
 
 import (
+    "database/sql"
     "errors"
     "fmt"
     "strings"
@@ -39,7 +40,7 @@ type MsisdnList struct {
     CallerIDName string          `sql:"type:varchar(20);index" json:"callerIdName"`
     Uniqueid     string          `sql:"type:varchar(20);index" json:"uniqueId"`
     TimeCalled   time.Time       `sql:"type:TIMESTAMP;index" json:"timeCalled"`
-    Priority     *MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
+    Priority     MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
 type MsisdnPriority struct {
@@ -129,7 +130,7 @@ func (d *DB) ProcessedMsisdn(callerIdNum string) string {
     msisdn := &MsisdnList{}
 
     if err := tx.Raw("SELECT m.* FROM `msisdn_lists` m, `msisdn_priorities` p "+
-        "WHERE m.id = p.msisdn_id and m.status = ? or m.status = ? order by p.priority, p.msisdn_id "+
+        "WHERE m.id = p.msisdn_id and m.status = ? or m.status = ? ORDER BY p.priority, p.msisdn_id "+
         "LIMIT 1 FOR UPDATE",
         "", "recall").
         Scan(msisdn).
@@ -217,46 +218,73 @@ func (d *DB) UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event
 
 func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
     list := new([]MsisdnList)
-    d.getPreloadPriorityDB().Find(list)
-
-    return list, nil
+    return list, d.getPreloadPriorityDB("", "").Find(list).Error
 }
 
-func (d *DB) GetMsisdnListInProgress() (int, *[]MsisdnList, error) {
+func (d *DB) GetMsisdnListInProgress(sortBy, sortOrder string) (int, *[]MsisdnList, error) {
     var count int
-    list := new([]MsisdnList)
     d.Find(&[]MsisdnList{}).Count(&count)
-    err := d.getMsisdnInProgressDB(list).Error
+    list, err := d.getMsisdnInProgressDB(sortBy, sortOrder)
     return count, list, err
 }
 
-func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int) (int, *[]MsisdnList, error) {
+func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int, sortBy, sortOrder string) (int, *[]MsisdnList, error) {
     var count int
-    list := new([]MsisdnList)
     d.Find(&[]MsisdnList{}).Count(&count)
-    err := d.getMsisdnInProgressWithPaginationDB(list, rows, page).Error
+    list, err := d.getMsisdnInProgressWithPaginationDB(rows, page, sortBy, sortOrder)
     return count, list, err
 }
 
-func (d *DB) getPreloadPriorityDB() *gorm.DB {
+func (d *DB) getPreloadPriorityDB(sortByField, order string) *gorm.DB {
     return d.Preload("Priority")
 }
 
-func (d *DB) getMsisdnInProgressDB(list *[]MsisdnList) *gorm.DB {
-    return d.getPreloadPriorityDB().
-        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+func (d *DB) getMsisdnInProgressDB(sortByField, order string) (*[]MsisdnList, error) {
+    if sortByField == "id" {
+        sortByField = "l.id"
+    }
+    rows, err := d.Raw(fmt.Sprintf(GetQuery(MsisdnInProgress), sortByField, order)).Rows()
+    if err != nil {
+        xlog.Errorf("get in progress msisdns error: %s", err)
+        return nil, err
+    }
+    return d.scanMsisdn(rows)
 }
 
-func (d *DB) getMsisdnInProgressWithPaginationDB(list *[]MsisdnList, row, page int) *gorm.DB {
+func (d *DB) getMsisdnInProgressWithPaginationDB(row, page int, sortByField, order string) (*[]MsisdnList, error) {
     if row == 0 {
         row = defaultMsisdnRowsCount
     }
     if page != 0 {
         page = (page - 1) * row
     }
-    return d.getPreloadPriorityDB().
-        Limit(row).Offset(page).
-        Find(list, "status = ? or status = ? or status = ?", "progress", "", "recall")
+    if sortByField == "id" {
+        sortByField = "l.id"
+    }
+    rows, err := d.Raw(fmt.Sprintf(GetQuery(MsisdnInProgressWithPagination), sortByField, order, row, page)).Rows()
+    if err != nil {
+        xlog.Errorf("get in progress msisdns error: %s", err)
+        return nil, err
+    }
+    return d.scanMsisdn(rows)
+}
+
+func (d *DB) scanMsisdn(rows *sql.Rows) (*[]MsisdnList, error){
+    defer rows.Close()
+    m := MsisdnList{Priority: MsisdnPriority{}}
+    list := new([]MsisdnList)
+    for rows.Next() {
+        if err := rows.Scan(&m.ID, &m.Msisdn, &m.Status, &m.Time,
+            &m.ActionID, &m.CauseTxt, &m.Cause, &m.Event,
+            &m.Channel, &m.CallerIDNum, &m.CallerIDName,
+            &m.Uniqueid, &m.TimeCalled,
+            &m.Priority.ID, &m.Priority.MsisdnID, &m.Priority.Priority); err != nil {
+            xlog.Errorf("scan error: %s", err)
+            return nil, err
+        }
+        *list = append(*list, m)
+    }
+    return list, nil
 }
 
 func (d *DB) UpdatePriority(id, priority int) error {
@@ -278,7 +306,7 @@ func (d *DB) DeleteMsisdn(id int) error {
 
 func (d *DB) AddNewNumbers(numbers []string) error {
     for _, number := range numbers {
-        if err := d.Create(&MsisdnList{Msisdn: number, Priority: &MsisdnPriority{}}).Error; err != nil {
+        if err := d.Create(&MsisdnList{Msisdn: number, Priority: MsisdnPriority{}}).Error; err != nil {
             return err
         }
     }
