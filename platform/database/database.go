@@ -130,7 +130,7 @@ func (d *DB) ProcessedMsisdn(callerIdNum string) string {
     msisdn := &MsisdnList{}
 
     if err := tx.Raw("SELECT m.* FROM `msisdn_lists` m, `msisdn_priorities` p "+
-        "WHERE m.id = p.msisdn_id and m.status = ? or m.status = ? ORDER BY p.priority, p.msisdn_id "+
+        "WHERE m.id = p.msisdn_id and (m.status = ? or m.status = ?) ORDER BY p.priority, p.msisdn_id "+
         "LIMIT 1 FOR UPDATE",
         "", "recall").
         Scan(msisdn).

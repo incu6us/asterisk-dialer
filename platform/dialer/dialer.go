@@ -126,6 +126,7 @@ func (a *dialer) Connect() error {
         err = errors.New(message)
     })
 
+    // TODO: Dial register must be added with adding event to 'userIsCalling'
     amigoClient.RegisterHandler("PeerStatus", a.peerStatusListening)
     amigoClient.RegisterHandler("Hangup", a.peerHangup)
 
