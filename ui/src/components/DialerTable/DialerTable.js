@@ -1,7 +1,6 @@
 import React from 'react';
 import Table from '../Table/Table';
 import {Paging} from '../Paging/Paging';
-import * as utils from '../../utils/utils';
 import * as CONSTS from '../../utils/consts';
 
 
@@ -13,14 +12,12 @@ export const DialerTable = ({
     urls
 }) => {
     const {paging} = options;
+    const {pagingChange, updateCallUrl} = actions;
     return <div>
         <Table
             fields={orders}
             columns={columns}
-            tableActions={{
-                actions,
-                updateCallUrl
-            }}
+            tableActions={actions}
             options={{
                 paging,
                 urls
@@ -33,25 +30,15 @@ export const DialerTable = ({
             current={paging.currentPage}
             numPerPage={paging.numPerPage}
             onChange={
-                ( page ) => actions.pagingChange(
+                ( page ) => pagingChange(
                     updateCallUrl(
                         urls[CONSTS.CALL_IN_PROGRESS],
                         page,
-                        20
+                        paging.numPerPage
                     ),
                     page
                 )
             }
         />
     </div>
-};
-
-const  updateCallUrl = (url, page, limit) => {
-    return utils.getUrl(
-        url,
-        page,
-        // sortBy,
-        // sortOrder,
-        limit
-    );
 };

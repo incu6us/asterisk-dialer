@@ -2,7 +2,9 @@ import React from 'react';
 import {Button} from '../Button/Button';
 import Table from '../Table/Table';
 import {DialerTable} from '../DialerTable/DialerTable';
+import DropdownList from "../Dropdown/DropdownList";
 import * as CONSTS from "../../utils/consts";
+import * as utils from '../../utils/utils';
 
 
 export const Dialer = ({
@@ -17,6 +19,7 @@ export const Dialer = ({
     startDialer,
     stopDialer,
     deleteRecord,
+    limitChange,
     isAppStarted,
     isAppStopped,
     urls
@@ -74,6 +77,23 @@ export const Dialer = ({
                     </div>: null
             }
             <h2>Phone call orders</h2>
+            <div className={'app-dropdown-wrapper'}>
+                <DropdownList
+                    items={CONSTS.DROPDOWN_LIST}
+                    onChange={
+                        (limit)=>limitChange(
+                            updateCallUrl(
+                                urls[CONSTS.CALL_IN_PROGRESS],
+                                paging.currentPage,
+                                limit
+                            ),
+                            limit
+                        )
+                    }
+                    trigger={<button>{ paging.numPerPage } per page</button>}
+                    triggerClassName={' button dropdown app-button app-button_secondary app-button_secondary__small'}
+                />
+            </div>
             <DialerTable
                 orders={dialerLists}
                 columns={CONSTS.DIALER_COLUMNS}
@@ -87,9 +107,20 @@ export const Dialer = ({
                     cancelChangePriority,
                     deleteRecord,
                     getCallInProgress,
+                    updateCallUrl
                 }}
                 urls={urls}
             />
         </div>
+    );
+};
+
+const  updateCallUrl = (url, page, limit) => {
+    return utils.getUrl(
+        url,
+        page,
+        limit,
+        // sortBy,
+        // sortOrder,
     );
 };
