@@ -15,7 +15,7 @@ class AppStore extends ReduceStore {
             paging: {
                 total: null,
                 currentPage: 1,
-                numPerPage: 20,
+                numPerPage: CONSTS.DEFAULT_RECORDS,
             },
             isAppStarted: false,
             isAppStopped: false,
@@ -129,6 +129,16 @@ class AppStore extends ReduceStore {
                     paging: {
                         ...state.paging,
                         total: state.paging.total - 1,
+                    }
+                };
+
+            case ACTIONS.LIMIT_CHANGE_SUCCESS:
+                console.log(action.limit);
+                return {
+                    ...state,
+                    paging: {
+                        ...state.paging,
+                        numPerPage: action.limit,
                     }
                 };
 

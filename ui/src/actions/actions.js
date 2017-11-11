@@ -1,7 +1,6 @@
 import appDispatcher from '../utils/dispatcher';
 import * as http from '../utils/http';
 import * as ACTIONS from "./types";
-import * as CONSTS from '../utils/consts';
 
 export const getRegisteredUsers = (url) => {
     http.get(url)
@@ -97,6 +96,18 @@ export const deleteRecord = (url, id) => {
         }))
         .catch(error => appDispatcher.dispatch({
             type: ACTIONS.DELETE_RECORD_FAIL,
+            error
+        }))
+};
+
+export const limitChange = (url, limit) => {
+    http.get(url)
+        .then(data => appDispatcher.dispatch({
+            type: ACTIONS.LIMIT_CHANGE_SUCCESS,
+            limit
+        }))
+        .catch(error => appDispatcher.dispatch({
+            type: ACTIONS.LIMIT_CHANGE_FAIL,
             error
         }))
 };

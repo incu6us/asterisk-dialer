@@ -51,7 +51,7 @@ export default class Table extends React.Component {
                                     updateCallUrl(
                                         urls[CONSTS.CALL_IN_PROGRESS],
                                         paging.currentPage,
-                                        20
+                                        paging.numPerPage
                                     )
                                 )
                             }

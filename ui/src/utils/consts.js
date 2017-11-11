@@ -43,6 +43,21 @@ export const DIALER_COLUMNS = {
     [DELETE]: '',
 };
 
+export const DROPDOWN_LIST = [
+    {
+        text: '20 per page',
+        value: 20,
+    },
+    {
+        text: '50 per page',
+        value: 50,
+    },
+    {
+        text: '100 per page',
+        value: 100
+    }
+];
+
 export const getHostFn = () => {
     return window.location.protocol+"//"+window.location.host+"/{API}";
 };
