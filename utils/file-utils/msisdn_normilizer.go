@@ -7,14 +7,6 @@ import (
 func MSISDNNormalizer(str string) []string {
 	numberList := make([]string, 0)
 
-	if strings.HasPrefix(str, "+380"){
-		str = strings.Replace(str, "+380", "0", 1)
-	}
-
-	if strings.HasPrefix(str, "380"){
-		str = strings.Replace(str, "380", "0", 1)
-	}
-
 	list := strings.Split(
 		strings.Replace(
 			strings.Replace(str,
@@ -31,6 +23,14 @@ func MSISDNNormalizer(str string) []string {
 	    if num == "" {
 	        continue
         }
+        if strings.HasPrefix(num, "+380"){
+            num = strings.Replace(num, "+380", "0", 1)
+        }
+
+        if strings.HasPrefix(num, "380"){
+            num = strings.Replace(num, "380", "0", 1)
+        }
+
 		numberList = append(numberList, num)
 	}
 
