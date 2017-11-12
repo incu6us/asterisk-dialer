@@ -239,7 +239,7 @@ func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int, sortBy, sortO
     return d.getInProgressCount(), list, nil
 }
 
-func (d *DB) getInProgressCount() int{
+func (d *DB) getInProgressCount() int {
     var count int
     d.Raw(GetQuery(MsisdnInProgressCount)).Row().Scan(&count)
     return count
