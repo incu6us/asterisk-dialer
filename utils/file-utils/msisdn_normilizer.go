@@ -26,9 +26,11 @@ func MSISDNNormalizer(str string) []string {
 			-1),
 		";")
 
-	listLen := len(list) - 1
 
-	for _, num := range list[:listLen] {
+	for _, num := range list {
+	    if num == "" {
+	        continue
+        }
 		numberList = append(numberList, num)
 	}
 
