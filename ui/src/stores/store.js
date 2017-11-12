@@ -146,8 +146,8 @@ class AppStore extends ReduceStore {
             case ACTIONS.SORT_CHANGE_SUCCESS:
                 return {
                     ...state,
-                    sortBy: action.sortBy === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC,
-                    sortOrder: action.sortOrder,
+                    sortBy: action.sortBy,
+                    sortOrder: action.sortOrder === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC,
                 };
 
 
