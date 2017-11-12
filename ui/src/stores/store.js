@@ -3,6 +3,7 @@ import { ReduceStore } from 'flux/utils';
 // consts
 import * as ACTIONS from '../actions/types';
 import appDispatcher from '../utils/dispatcher';
+import * as CONSTS from '../utils/consts';
 
 
 class AppStore extends ReduceStore {
@@ -14,10 +15,15 @@ class AppStore extends ReduceStore {
             paging: {
                 total: null,
                 currentPage: 1,
-                numPerPage: 20,
+                numPerPage: CONSTS.DEFAULT_RECORDS,
             },
             isAppStarted: false,
             isAppStopped: false,
+            urls: {
+                ...CONSTS.API
+            },
+            sortOrder: CONSTS.ASC,
+            sortBy: CONSTS.PRIORITY,
         };
     }
 
@@ -121,12 +127,33 @@ class AppStore extends ReduceStore {
                     ...state,
                     dialerLists: [
                         ...state.dialerLists.filter(dialer => dialer.id !== action.id)
-                    ]
+                    ],
+                    paging: {
+                        ...state.paging,
+                        total: state.paging.total - 1,
+                    }
                 };
+
+            case ACTIONS.LIMIT_CHANGE_SUCCESS:
+                return {
+                    ...state,
+                    paging: {
+                        ...state.paging,
+                        numPerPage: action.limit,
+                    }
+                };
+
+            case ACTIONS.SORT_CHANGE_SUCCESS:
+                return {
+                    ...state,
+                    sortBy: action.sortBy === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC,
+                    sortOrder: action.sortOrder,
+                };
+
 
             default:
                 return state;
-        };
+        }
     };
 }
 
