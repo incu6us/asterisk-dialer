@@ -223,23 +223,26 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
 }
 
 func (d *DB) GetMsisdnListInProgress(sortBy, sortOrder string) (int, *[]MsisdnList, error) {
-    var count int
-    d.Raw(GetQuery(MsisdnInProgressCount)).Scan(&count)
+
     list, err := d.getMsisdnInProgressDB(sortBy, sortOrder)
     if err != nil {
         return 0, &[]MsisdnList{}, err
     }
-    return count, list, err
+    return d.getInProgressCount(), list, err
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int, sortBy, sortOrder string) (int, *[]MsisdnList, error) {
-    var count int
-    d.Raw(GetQuery(MsisdnInProgressCount)).Scan(&count)
     list, err := d.getMsisdnInProgressWithPaginationDB(rows, page, sortBy, sortOrder)
     if err != nil {
         return 0, &[]MsisdnList{}, err
     }
-    return count, list, nil
+    return d.getInProgressCount(), list, nil
+}
+
+func (d *DB) getInProgressCount() int{
+    var count int
+    d.Raw(GetQuery(MsisdnInProgressCount)).Row().Scan(&count)
+    return count
 }
 
 func (d *DB) getPreloadPriorityDB(sortByField, order string) *gorm.DB {
