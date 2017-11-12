@@ -224,12 +224,18 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
 
 func (d *DB) GetMsisdnListInProgress(sortBy, sortOrder string) (int, *[]MsisdnList, error) {
     list, err := d.getMsisdnInProgressDB(sortBy, sortOrder)
+    if err != nil {
+        return 0, &[]MsisdnList{}, err
+    }
     return len(*list), list, err
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int, sortBy, sortOrder string) (int, *[]MsisdnList, error) {
     list, err := d.getMsisdnInProgressWithPaginationDB(rows, page, sortBy, sortOrder)
-    return len(*list), list, err
+    if err != nil {
+        return 0, &[]MsisdnList{}, err
+    }
+    return len(*list), list, nil
 }
 
 func (d *DB) getPreloadPriorityDB(sortByField, order string) *gorm.DB {
