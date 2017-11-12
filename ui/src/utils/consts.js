@@ -3,7 +3,6 @@ export const START = 'api/v1/dialer/start';
 export const STOP = 'api/v1/dialer/stop';
 export const APP_STATUS = 'api/v1/dialer/status';
 export const CALL_IN_PROGRESS = 'api/v1/dialer/msisdn/inProgress';
-export const LIMIT_PARAMS = '?limit={limit}&page={page}';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
@@ -43,17 +42,34 @@ export const DIALER_COLUMNS = {
     [DELETE]: '',
 };
 
+export const DROPDOWN_LIST = [
+    {
+        text: '20 per page',
+        value: 20,
+    },
+    {
+        text: '50 per page',
+        value: 50,
+    },
+    {
+        text: '100 per page',
+        value: 100
+    }
+];
+
+export const ASC = 'asc';
+export const DESC = 'desc';
+
 export const getHostFn = () => {
     return window.location.protocol+"//"+window.location.host+"/{API}";
 };
 
 export const DEFAULT_RECORDS = 20;
-export const DEFAULT_GET_PARAMS = LIMIT_PARAMS.replace('{limit}', DEFAULT_RECORDS).replace('{page}', 1);
 
 export const API = {
     [START]: getHostFn().replace('{API}', START),
     [STOP]: getHostFn().replace('{API}', STOP),
     [APP_STATUS]: getHostFn().replace('{API}', APP_STATUS),
     [REGISTERED_USERS]: getHostFn().replace('{API}', REGISTERED_USERS),
-    [CALL_IN_PROGRESS]: getHostFn().replace('{API}', CALL_IN_PROGRESS) + DEFAULT_GET_PARAMS,
+    [CALL_IN_PROGRESS]: getHostFn().replace('{API}', CALL_IN_PROGRESS),
 };
