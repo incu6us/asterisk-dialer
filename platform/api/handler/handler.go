@@ -4,7 +4,6 @@ import (
     "encoding/json"
     "errors"
     "io/ioutil"
-    "log"
     "net/http"
     "strconv"
     "sync"
@@ -28,8 +27,25 @@ type response struct {
 }
 
 type msisdnPaging struct {
-    Total  int                    `json:"total"`
-    Result *[]database.MsisdnList `json:"result"`
+    Total  int                 `json:"total"`
+    Result *[]normalizedMsisdn `json:"result"`
+}
+
+type normalizedMsisdn struct {
+    ID           int                     `json:"id"`
+    Msisdn       string                  `json:"msisdn"`
+    Status       string                  `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
+    Time         string                  `json:"time"`
+    ActionID     string                  `sql:"type:varchar(50);index" json:"actionId"`
+    CauseTxt     string                  `sql:"type:varchar(50)" json:"causeTxt"`
+    Cause        string                  `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
+    Event        string                  `sql:"type:varchar(50)" json:"event"`
+    Channel      string                  `sql:"type:varchar(50);index" json:"channel"`
+    CallerIDNum  string                  `sql:"type:varchar(20);index" json:"callerIdNum"`
+    CallerIDName string                  `sql:"type:varchar(20);index" json:"callerIdName"`
+    Uniqueid     string                  `sql:"type:varchar(20);index" json:"uniqueId"`
+    TimeCalled   string                  `json:"timeCalled"`
+    Priority     database.MsisdnPriority `json:"priority"`
 }
 
 const (
@@ -47,6 +63,30 @@ func (a *ApiHandler) print(w http.ResponseWriter, r *http.Request, message inter
         w.WriteHeader(http.StatusInternalServerError)
         xlog.Errorf("parse message error: %s", err)
     }
+}
+
+func (a *ApiHandler) convertMsisdnObject(tmpList *[]database.MsisdnList) *[]normalizedMsisdn {
+    list := make([]normalizedMsisdn, len(*tmpList))
+    for _, i := range *tmpList {
+        item := &normalizedMsisdn{
+            ID:           i.ID,
+            Msisdn:       i.Msisdn,
+            Status:       i.Status,
+            Time:         i.Time.Format("2006-01-02 15:04:05"),
+            ActionID:     i.ActionID,
+            CauseTxt:     i.CauseTxt,
+            Cause:        i.Cause,
+            Event:        i.Event,
+            Channel:      i.Channel,
+            CallerIDNum:  i.CallerIDNum,
+            CallerIDName: i.CallerIDName,
+            Uniqueid:     i.Uniqueid,
+            TimeCalled:   i.TimeCalled.Format("2006-01-02 15:04:05"),
+            Priority:     i.Priority,
+        }
+        list = append(list, *item)
+    }
+    return &list
 }
 
 func (a *ApiHandler) Test(w http.ResponseWriter, r *http.Request) {
@@ -106,17 +146,16 @@ func (a *ApiHandler) UploadMSISDNList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *ApiHandler) GetMsisdnList(w http.ResponseWriter, r *http.Request) {
-    list, err := a.db.GetMsisdnListWithPriority()
+    tmpList, err := a.db.GetMsisdnListWithPriority()
     if err != nil {
-        log.Printf("get msisdn list with priority error: %s", err)
+        xlog.Errorf("Can't load priority msisdn list: $s", err)
         w.WriteHeader(http.StatusInternalServerError)
         a.print(w, r, err)
         return
     }
-
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
-    a.print(w, r, list)
+    a.print(w, r, a.convertMsisdnObject(tmpList))
 }
 
 // defaults: page=20; if limit=0 - show all records
@@ -183,7 +222,12 @@ func (a *ApiHandler) GetMsisdnListInProgress(w http.ResponseWriter, r *http.Requ
 
     w.Header().Set("Content-Type", a.DefaultContentType)
     w.WriteHeader(http.StatusOK)
-    if err := json.NewEncoder(w).Encode(msisdnPaging{Total: count, Result: list}); err != nil {
+    if err := json.NewEncoder(w).Encode(
+        msisdnPaging{
+            Total:  count,
+            Result: a.convertMsisdnObject(list),
+        },
+    ); err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         xlog.Errorf("parse message error: %s", err)
         return
