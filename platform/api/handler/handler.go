@@ -79,7 +79,7 @@ func (a *ApiHandler) convertMsisdnObject(tmpList *[]database.MsisdnList) *[]norm
             ID:           i.ID,
             Msisdn:       i.Msisdn,
             Status:       i.Status,
-            Time:         i.Time.Format("2006-01-02 15:04:05"),
+            Time:         i.Time.Format(TimeFormat),
             ActionID:     i.ActionID,
             CauseTxt:     i.CauseTxt,
             Cause:        i.Cause,
