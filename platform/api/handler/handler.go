@@ -50,6 +50,7 @@ type normalizedMsisdn struct {
 
 const (
     CONTENT_TYPE = "application/json"
+    TimeFormat   = "2006-01-02 15:04:05"
 )
 
 var (
@@ -68,6 +69,12 @@ func (a *ApiHandler) print(w http.ResponseWriter, r *http.Request, message inter
 func (a *ApiHandler) convertMsisdnObject(tmpList *[]database.MsisdnList) *[]normalizedMsisdn {
     list := make([]normalizedMsisdn, 0, len(*tmpList))
     for _, i := range *tmpList {
+        var timeCalled string
+        if i.TimeCalled.Format(TimeFormat) == "0001-01-01 00:00:00" {
+            timeCalled = "0000-00-00 00:00:00"
+        } else {
+            timeCalled = i.TimeCalled.Format(TimeFormat)
+        }
         item := &normalizedMsisdn{
             ID:           i.ID,
             Msisdn:       i.Msisdn,
@@ -81,7 +88,7 @@ func (a *ApiHandler) convertMsisdnObject(tmpList *[]database.MsisdnList) *[]norm
             CallerIDNum:  i.CallerIDNum,
             CallerIDName: i.CallerIDName,
             Uniqueid:     i.Uniqueid,
-            TimeCalled:   i.TimeCalled.Format("2006-01-02 15:04:05"),
+            TimeCalled:   timeCalled,
             Priority:     i.Priority,
         }
         list = append(list, *item)

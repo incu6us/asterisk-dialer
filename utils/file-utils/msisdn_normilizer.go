@@ -30,7 +30,6 @@ func MSISDNNormalizer(str string) []string {
         if strings.HasPrefix(num, "380"){
             num = strings.Replace(num, "380", "0", 1)
         }
-
 		numberList = append(numberList, num)
 	}
 
