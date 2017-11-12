@@ -17,6 +17,7 @@ export const Dialer = ({
     startDialer,
     stopDialer,
     deleteRecord,
+    sortChange,
     limitChange,
     isAppStarted,
     isAppStopped,
@@ -111,7 +112,8 @@ export const Dialer = ({
                     submitPriority,
                     deleteRecord,
                     getCallInProgress,
-                    updateCallUrl
+                    updateCallUrl,
+                    sortChange
                 }}
                 urls={urls}
             />
