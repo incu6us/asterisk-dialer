@@ -38,7 +38,7 @@ export default class Table extends React.Component {
                         sortOrder
                     ),sortBy, sortOrder): null}
                 >
-                    <span className={`app-table-${column}-arrows`} />{columns[ column ]}
+                    <span className={`app-table-${column}-arrows ` + sortOrder} />{columns[ column ]}
                 </th>
             ) )}
         </tr>
