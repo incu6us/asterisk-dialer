@@ -66,7 +66,7 @@ func (a *ApiHandler) print(w http.ResponseWriter, r *http.Request, message inter
 }
 
 func (a *ApiHandler) convertMsisdnObject(tmpList *[]database.MsisdnList) *[]normalizedMsisdn {
-    list := make([]normalizedMsisdn, len(*tmpList))
+    list := make([]normalizedMsisdn, 0, len(*tmpList))
     for _, i := range *tmpList {
         item := &normalizedMsisdn{
             ID:           i.ID,
