@@ -23,9 +23,24 @@ export default class Table extends React.Component {
 
 
     _makeHead = () => {
-        const {columns} = this.props;
+        const {columns, tableActions, options} = this.props;
+        const {urls, paging, sortBy, sortOrder} = options;
+        const {sortChange, updateCallUrl} = tableActions;
         return <tr>
-            {Object.keys( columns ).map( ( column, i ) => (<th key={i}>{columns[ column ]}</th>) )}
+            {Object.keys( columns ).map( ( column, i ) => (
+                <th
+                    key={i} className={`app-table-${column}`}
+                    onClick={column === CONSTS.PRIORITY ? () => sortChange(
+                        updateCallUrl(urls[CONSTS.CALL_IN_PROGRESS],
+                        paging.currentPage,
+                        paging.numPerPage,
+                        sortBy,
+                        sortOrder
+                    ),sortBy, sortOrder): null}
+                >
+                    <span className={`app-table-${column}-arrows`} />{columns[ column ]}
+                </th>
+            ) )}
         </tr>
     };
 
@@ -37,7 +52,7 @@ export default class Table extends React.Component {
             isDialer,
             options
         } = this.props;
-        const {urls, paging} = options;
+        const {urls, paging, sortBy, sortOrder} = options;
         const {getCallInProgress, updateCallUrl} = tableActions;
         if (fields.length === 0 && isDialer) {
             return (
@@ -51,7 +66,9 @@ export default class Table extends React.Component {
                                     updateCallUrl(
                                         urls[CONSTS.CALL_IN_PROGRESS],
                                         paging.currentPage,
-                                        paging.numPerPage
+                                        paging.numPerPage,
+                                        sortBy,
+                                        sortOrder
                                     )
                                 )
                             }

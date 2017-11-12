@@ -17,10 +17,13 @@ export const Dialer = ({
     startDialer,
     stopDialer,
     deleteRecord,
+    sortChange,
     limitChange,
     isAppStarted,
     isAppStopped,
-    urls
+    urls,
+    sortBy,
+    sortOrder,
 }) => {
     return (
         <div className={'app-wrapper'}>
@@ -56,7 +59,9 @@ export const Dialer = ({
                 tableActions={{}}
                 options={{
                     paging,
-                    urls
+                    urls,
+                    sortBy,
+                    sortOrder
                 }}
                 isDialer={false}
             />
@@ -83,7 +88,9 @@ export const Dialer = ({
                             updateCallUrl(
                                 urls[CONSTS.CALL_IN_PROGRESS],
                                 paging.currentPage,
-                                limit
+                                limit,
+                                sortBy,
+                                sortOrder,
                             ),
                             limit
                         )
@@ -97,13 +104,16 @@ export const Dialer = ({
                 columns={CONSTS.DIALER_COLUMNS}
                 options={{
                     paging,
+                    sortBy,
+                    sortOrder
                 }}
                 actions={{
                     pagingChange,
                     submitPriority,
                     deleteRecord,
                     getCallInProgress,
-                    updateCallUrl
+                    updateCallUrl,
+                    sortChange
                 }}
                 urls={urls}
             />
@@ -111,12 +121,12 @@ export const Dialer = ({
     );
 };
 
-const  updateCallUrl = (url, page, limit) => {
+const  updateCallUrl = (url, page, limit, sortBy, sortOrder) => {
     return utils.getUrl(
         url,
         page,
         limit,
-        // sortBy,
-        // sortOrder,
+        sortBy,
+        sortOrder,
     );
 };

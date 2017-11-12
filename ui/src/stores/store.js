@@ -21,7 +21,9 @@ class AppStore extends ReduceStore {
             isAppStopped: false,
             urls: {
                 ...CONSTS.API
-            }
+            },
+            sortOrder: CONSTS.ASC,
+            sortBy: CONSTS.PRIORITY,
         };
     }
 
@@ -140,6 +142,14 @@ class AppStore extends ReduceStore {
                         numPerPage: action.limit,
                     }
                 };
+
+            case ACTIONS.SORT_CHANGE_SUCCESS:
+                return {
+                    ...state,
+                    sortBy: action.sortBy === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC,
+                    sortOrder: action.sortOrder,
+                };
+
 
             default:
                 return state;
