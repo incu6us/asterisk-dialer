@@ -11,6 +11,10 @@ func MSISDNNormalizer(str string) []string {
 		str = strings.Replace(str, "+380", "0", 1)
 	}
 
+	if strings.HasPrefix(str, "380"){
+		str = strings.Replace(str, "380", "0", 1)
+	}
+
 	list := strings.Split(
 		strings.Replace(
 			strings.Replace(str,
