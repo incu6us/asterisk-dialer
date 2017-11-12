@@ -11,8 +11,15 @@ export const DialerTable = ({
     actions,
     urls
 }) => {
-    const {paging} = options;
-    const {pagingChange, updateCallUrl} = actions;
+    const {
+        paging,
+        sortBy,
+        sortOrder
+    } = options;
+    const {
+        pagingChange,
+        updateCallUrl,
+    } = actions;
     return <div>
         <Table
             fields={orders}
@@ -20,7 +27,9 @@ export const DialerTable = ({
             tableActions={actions}
             options={{
                 paging,
-                urls
+                urls,
+                sortBy,
+                sortOrder
             }}
             isDialer={true}
         />
@@ -34,7 +43,9 @@ export const DialerTable = ({
                     updateCallUrl(
                         urls[CONSTS.CALL_IN_PROGRESS],
                         page,
-                        paging.numPerPage
+                        paging.numPerPage,
+                        sortBy,
+                        sortOrder
                     ),
                     page
                 )

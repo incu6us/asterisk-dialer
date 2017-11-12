@@ -1,9 +1,9 @@
-export function getUrl (baseUrl, page, limit=20) {
+export function getUrl (baseUrl, page, limit=20, sortBy, sortOrder) {
     const params = {
         page: page,
-        //sortBy: sortBy,
-        //sortOrder: sortOrder,
         limit: limit,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
     };
     return baseUrl + '?' + Object.keys(params).map(param => {
         const value = params[param];

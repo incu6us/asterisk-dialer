@@ -3,7 +3,6 @@ export const START = 'api/v1/dialer/start';
 export const STOP = 'api/v1/dialer/stop';
 export const APP_STATUS = 'api/v1/dialer/status';
 export const CALL_IN_PROGRESS = 'api/v1/dialer/msisdn/inProgress';
-export const LIMIT_PARAMS = '?limit={limit}&page={page}';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
@@ -57,6 +56,9 @@ export const DROPDOWN_LIST = [
         value: 100
     }
 ];
+
+export const ASC = 'asc';
+export const DESC = 'desc';
 
 export const getHostFn = () => {
     return window.location.protocol+"//"+window.location.host+"/{API}";

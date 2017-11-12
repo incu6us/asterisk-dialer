@@ -112,3 +112,16 @@ export const limitChange = (url, limit) => {
         }))
 };
 
+export const sortChange = (url, sortBy, sortOrder) => {
+    http.get(url)
+        .then(data => appDispatcher.dispatch({
+            type: ACTIONS.SORT_CHANGE_SUCCESS,
+            sortBy,
+            sortOrder
+        }))
+        .catch(error => appDispatcher.dispatch({
+            type: ACTIONS.SORT_CHANGE_FAIL,
+            error
+        }))
+};
+
