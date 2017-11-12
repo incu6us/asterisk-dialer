@@ -135,19 +135,30 @@ class AppStore extends ReduceStore {
                 };
 
             case ACTIONS.LIMIT_CHANGE_SUCCESS:
+                const updateByLimit = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
                     paging: {
                         ...state.paging,
                         numPerPage: action.limit,
-                    }
+                        total: action.data.total,
+                    },
+                    dialerLists: updateByLimit,
                 };
 
             case ACTIONS.SORT_CHANGE_SUCCESS:
+                const updateBySorting = action.data.result.map(item => {
+                    item.priority = item.priority.priority;
+                    return item;
+                });
                 return {
                     ...state,
                     sortBy: action.sortBy,
-                    sortOrder: action.sortOrder === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC,
+                    sortOrder: action.sortOrder,
+                    dialerLists: updateBySorting,
                 };
 
 
