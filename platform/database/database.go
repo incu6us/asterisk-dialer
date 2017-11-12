@@ -16,6 +16,7 @@ import (
 
 const (
     defaultMsisdnRowsCount = 20
+    DefaultPriority        = 10
 )
 
 type DialerUser struct {
@@ -27,19 +28,19 @@ type DialerUser struct {
 }
 
 type MsisdnList struct {
-    ID           int             `gorm:"primary_key" sql:"index" json:"id"`
-    Msisdn       string          `sql:"type:varchar(20);not null;index" json:"msisdn"`
-    Status       string          `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
-    Time         time.Time       `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
-    ActionID     string          `sql:"type:varchar(50);index" json:"actionId"`
-    CauseTxt     string          `sql:"type:varchar(50)" json:"causeTxt"`
-    Cause        string          `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
-    Event        string          `sql:"type:varchar(50)" json:"event"`
-    Channel      string          `sql:"type:varchar(50);index" json:"channel"`
-    CallerIDNum  string          `sql:"type:varchar(20);index" json:"callerIdNum"`
-    CallerIDName string          `sql:"type:varchar(20);index" json:"callerIdName"`
-    Uniqueid     string          `sql:"type:varchar(20);index" json:"uniqueId"`
-    TimeCalled   time.Time       `sql:"type:TIMESTAMP;index" json:"timeCalled"`
+    ID           int            `gorm:"primary_key" sql:"index" json:"id"`
+    Msisdn       string         `sql:"type:varchar(20);not null;index" json:"msisdn"`
+    Status       string         `sql:"type:varchar(10);DEFAULT:'';index" json:"status"`
+    Time         time.Time      `sql:"type:TIMESTAMP;DEFAULT:CURRENT_TIMESTAMP;index" json:"time"`
+    ActionID     string         `sql:"type:varchar(50);index" json:"actionId"`
+    CauseTxt     string         `sql:"type:varchar(50)" json:"causeTxt"`
+    Cause        string         `sql:"type:varchar(5);DEFAULT:''" json:"cause"`
+    Event        string         `sql:"type:varchar(50)" json:"event"`
+    Channel      string         `sql:"type:varchar(50);index" json:"channel"`
+    CallerIDNum  string         `sql:"type:varchar(20);index" json:"callerIdNum"`
+    CallerIDName string         `sql:"type:varchar(20);index" json:"callerIdName"`
+    Uniqueid     string         `sql:"type:varchar(20);index" json:"uniqueId"`
+    TimeCalled   time.Time      `sql:"type:TIMESTAMP;index" json:"timeCalled"`
     Priority     MsisdnPriority `json:"priority" gorm:"ForeignKey:MsisdnID;AssociationForeignKey:ID;not null"`
 }
 
@@ -222,17 +223,13 @@ func (d *DB) GetMsisdnListWithPriority() (*[]MsisdnList, error) {
 }
 
 func (d *DB) GetMsisdnListInProgress(sortBy, sortOrder string) (int, *[]MsisdnList, error) {
-    var count int
-    d.Find(&[]MsisdnList{}).Count(&count)
     list, err := d.getMsisdnInProgressDB(sortBy, sortOrder)
-    return count, list, err
+    return len(*list), list, err
 }
 
 func (d *DB) GetMsisdnListInProgressWithPagination(rows, page int, sortBy, sortOrder string) (int, *[]MsisdnList, error) {
-    var count int
-    d.Find(&[]MsisdnList{}).Count(&count)
     list, err := d.getMsisdnInProgressWithPaginationDB(rows, page, sortBy, sortOrder)
-    return count, list, err
+    return len(*list), list, err
 }
 
 func (d *DB) getPreloadPriorityDB(sortByField, order string) *gorm.DB {
@@ -269,7 +266,7 @@ func (d *DB) getMsisdnInProgressWithPaginationDB(row, page int, sortByField, ord
     return d.scanMsisdn(rows)
 }
 
-func (d *DB) scanMsisdn(rows *sql.Rows) (*[]MsisdnList, error){
+func (d *DB) scanMsisdn(rows *sql.Rows) (*[]MsisdnList, error) {
     defer rows.Close()
     m := MsisdnList{Priority: MsisdnPriority{}}
     list := new([]MsisdnList)
@@ -288,7 +285,7 @@ func (d *DB) scanMsisdn(rows *sql.Rows) (*[]MsisdnList, error){
 }
 
 func (d *DB) UpdatePriority(id, priority int) error {
-    if priority > 10 && priority < 1 && id < 0 {
+    if priority > DefaultPriority && priority < 1 && id < 0 {
         return errors.New("Priority or ID error")
     }
 
@@ -306,7 +303,7 @@ func (d *DB) DeleteMsisdn(id int) error {
 
 func (d *DB) AddNewNumbers(numbers []string) error {
     for _, number := range numbers {
-        if err := d.Create(&MsisdnList{Msisdn: number, Priority: MsisdnPriority{}}).Error; err != nil {
+        if err := d.Create(&MsisdnList{Msisdn: number, Priority: MsisdnPriority{Priority: DefaultPriority}}).Error; err != nil {
             return err
         }
     }
