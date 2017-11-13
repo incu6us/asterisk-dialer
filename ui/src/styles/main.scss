@@ -279,6 +279,9 @@ table {
       border-bottom: 2px solid #E1E1E1;
     }
   }
+  tr:nth-child(even) {
+    background: #E1E1E1;
+  }
 }
 
 .clearfix:after {
