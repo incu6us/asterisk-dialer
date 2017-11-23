@@ -111,18 +111,19 @@ func (d *DB) DeleteMSISDNOlderThenWeek() {
     d.Delete(&MsisdnList{}, "time < DATE(NOW()) - INTERVAL 7 DAY")
 }
 func (d *DB) UpdatePeerStatus(user, status, action, exten string) {
-    userFiledsUpdate := make(map[string]interface{})
-    userFiledsUpdate["peer_status"] = status
+    userFieldsUpdate := make(map[string]interface{})
+    if status != "" {
+        userFieldsUpdate["peer_status"] = status
+    }
     if action != "" {
-        userFiledsUpdate["action"] = action
+        userFieldsUpdate["action"] = action
     }
-
     if exten != "" {
-        userFiledsUpdate["exten"] = exten
+        userFieldsUpdate["exten"] = exten
     }
 
-    userFiledsUpdate["time"] = time.Now().UTC()
-    d.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFiledsUpdate) //("peer_status", status)
+    userFieldsUpdate["time"] = time.Now().UTC()
+    d.Model(&DialerUser{}).Where("peer = ?", user).Updates(userFieldsUpdate) //("peer_status", status)
 }
 
 func (d *DB) ProcessedMsisdn(callerIdNum string) string {
