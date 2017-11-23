@@ -193,7 +193,7 @@ func (a *dialer) CallToUser(userID string) (map[string]string, error) {
         params["Priority"] = "1"
         params["Async"] = "true"
 
-        a.db.UpdatePeerStatus(userID, "", "Originate", msisdn)
+        a.db.UpdatePeerStatus(userID, "", "Dial", msisdn)
 
         amiResponse, err := a.originate(params)
         if err != nil {
