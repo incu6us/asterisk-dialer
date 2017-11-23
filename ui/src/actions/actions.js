@@ -104,6 +104,7 @@ export const limitChange = (url, limit) => {
     http.get(url)
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.LIMIT_CHANGE_SUCCESS,
+            data,
             limit
         }))
         .catch(error => appDispatcher.dispatch({
@@ -116,6 +117,7 @@ export const sortChange = (url, sortBy, sortOrder) => {
     http.get(url)
         .then(data => appDispatcher.dispatch({
             type: ACTIONS.SORT_CHANGE_SUCCESS,
+            data,
             sortBy,
             sortOrder
         }))
