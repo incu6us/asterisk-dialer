@@ -315,6 +315,10 @@ func (d *DB) DeleteMsisdn(id int) error {
     return d.Delete(&MsisdnList{}, "id = ?", id).Error
 }
 
+func  (d *DB) ClearAll() error {
+    return d.Delete(&MsisdnList{}).Error
+}
+
 func (d *DB) AddNewNumbers(numbers []string) error {
     for _, number := range numbers {
         if err := d.Create(&MsisdnList{Msisdn: number, Priority: MsisdnPriority{Priority: DefaultPriority}}).Error; err != nil {
