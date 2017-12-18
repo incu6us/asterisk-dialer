@@ -127,3 +127,14 @@ export const sortChange = (url, sortBy, sortOrder) => {
         }))
 };
 
+export const clearAll = (url) => {
+    http.del(url)
+        .then(data => appDispatcher.dispatch({
+            type: ACTIONS.CLEAR_ALL_DATA_SUCCESS,
+        }))
+        .catch(error => appDispatcher.dispatch({
+            type: ACTIONS.CLEAR_ALL_DATA_FAIL,
+            error
+        }))
+}
+

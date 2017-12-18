@@ -24,6 +24,7 @@ export const Dialer = ({
     urls,
     sortBy,
     sortOrder,
+    clearAll,
 }) => {
     return (
         <div className={'app-wrapper'}>
@@ -43,7 +44,7 @@ export const Dialer = ({
                 <Button
                     className={'app-button app-button_success left'}
                     inscription={'Start'}
-                    onClick={() => startDialer(CONSTS.API[CONSTS.START])}
+                    onClick={()=>startDialer(CONSTS.API[CONSTS.START])}
                     isDisabled={isAppStarted}
                 />
                 <Button
@@ -81,6 +82,11 @@ export const Dialer = ({
             }
             <h2>Phone call orders</h2>
             <div className={'app-dropdown-wrapper'}>
+                <Button
+                    className={'app-button app-button_delete left'}
+                    inscription={'Clear all data'}
+                    onClick={()=>clearAll(CONSTS.API[CONSTS.CLEAR_ALL])}                    
+                />
                 <DropdownList
                     items={CONSTS.DROPDOWN_LIST}
                     onChange={
