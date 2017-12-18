@@ -309,6 +309,15 @@ func (a *ApiHandler) DeleteMsisdn(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusNoContent)
 }
 
+func (a *ApiHandler) ClearAll(w http.ResponseWriter, r *http.Request){
+    if err := a.db.ClearAll(); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        xlog.Errorf("can't delete items: %s", err)
+        a.print(w, r, response{err})
+    }
+    w.WriteHeader(http.StatusNoContent)
+}
+
 // simple check which improve, that server is running
 func (a *ApiHandler) Ready(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", a.DefaultContentType)
