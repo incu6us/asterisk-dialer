@@ -26,6 +26,7 @@ export default class Table extends React.Component {
         const {columns, tableActions, options} = this.props;
         const {urls, paging, sortBy, sortOrder} = options;
         const {sortChange, updateCallUrl} = tableActions;
+        const updatedSortOrder = sortOrder === CONSTS.ASC ? CONSTS.DESC : CONSTS.ASC;
         return <tr>
             {Object.keys( columns ).map( ( column, i ) => (
                 <th
@@ -35,10 +36,10 @@ export default class Table extends React.Component {
                         paging.currentPage,
                         paging.numPerPage,
                         sortBy,
-                        sortOrder
-                    ),sortBy, sortOrder): null}
+                        updatedSortOrder
+                    ),sortBy, updatedSortOrder): null}
                 >
-                    <span className={`app-table-${column}-arrows`} />{columns[ column ]}
+                    <span className={`app-table-${column}-arrows ` + sortOrder} />{columns[ column ]}
                 </th>
             ) )}
         </tr>
