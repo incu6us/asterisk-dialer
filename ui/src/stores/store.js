@@ -161,6 +161,19 @@ class AppStore extends ReduceStore {
                     dialerLists: updateBySorting,
                 };
 
+                case ACTIONS.CLEAR_ALL_DATA_SUCCESS: 
+                return {
+                    ...state,
+                    dialerLists: [],
+                    paging: {
+                        total: null,
+                        currentPage: 1,
+                        numPerPage: CONSTS.DEFAULT_RECORDS,
+                    },
+                    sortOrder: CONSTS.ASC,
+                    sortBy: CONSTS.PRIORITY,
+                }
+
 
             default:
                 return state;

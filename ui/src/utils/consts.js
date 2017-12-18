@@ -3,6 +3,7 @@ export const START = 'api/v1/dialer/start';
 export const STOP = 'api/v1/dialer/stop';
 export const APP_STATUS = 'api/v1/dialer/status';
 export const CALL_IN_PROGRESS = 'api/v1/dialer/msisdn/inProgress';
+export const CLEAR_ALL = '/api/v1/dialer/msisdn/clearAll';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
@@ -72,4 +73,5 @@ export const API = {
     [APP_STATUS]: getHostFn().replace('{API}', APP_STATUS),
     [REGISTERED_USERS]: getHostFn().replace('{API}', REGISTERED_USERS),
     [CALL_IN_PROGRESS]: getHostFn().replace('{API}', CALL_IN_PROGRESS),
+    [CLEAR_ALL]: getHostFn().replace('{API}', CLEAR_ALL)
 };
