@@ -33,21 +33,32 @@ var (
 )
 
 var (
-    userIsCalling map[string]bool
+    userIsCalling = make(map[string]bool)
 )
 
 func (a *dialer) peerDial(message map[string]string) {
     user := a.db.GetAutodialUser(strings.TrimPrefix(message["Peer"], "SIP/"))
-    if user.Peer != "" &&
-        !userIsCalling[strings.TrimPrefix(message["Peer"], "SIP/")] &&
-        a.dialerStatus {
-        userIsCalling[strings.TrimPrefix(message["Peer"], "SIP/")] = true
+    if user.Peer == "" && message["CallerIDNum"] != "" {
+        user = a.db.GetAutodialUser(message["CallerIDNum"])
+    }
+    var exten string
+    extenSlice := strings.Split(message["Dialstring"], "/")
+    xlog.Debug("!!! ", len(extenSlice))
+    if len(extenSlice) > 1 {
+        exten = extenSlice[1]
+    } else {
+        exten = message["Dialstring"]
+    }
+    a.db.UpdatePeerStatus(user.Peer, "", "Dial", exten)
+    if user.Peer != "" && !userIsCalling[user.Peer] {
+        userIsCalling[user.Peer] = true
 
         xlog.Infof("Dial: %#v", message)
     }
 }
 
 func (a *dialer) peerHangup(message map[string]string) {
+    xlog.Debug("!!!! ",message)
     user := a.db.GetAutodialUser(message["CallerIDNum"])
     if user.Peer != "" {
         callerIDNum := message["CallerIDNum"]
@@ -61,22 +72,26 @@ func (a *dialer) peerHangup(message map[string]string) {
         xlog.Debugf("peer hangup: %#v", message)
 
         a.db.UpdateAfterHangup(callerIDNum, callerIDName, cause, causeTxt, event, channel, uniqueid)
-        if userIsCalling[message["CallerIDNum"]] {
+        if userIsCalling[callerIDNum] {
             a.db.UpdatePeerStatus(user.Peer, "", event, "")
             xlog.Infof("Hangup: %#v", message)
         }
 
-        userIsCalling[message["CallerIDNum"]] = false
-        xlog.Debugf("Is user calling: %t", userIsCalling[message["CallerIDNum"]])
+        if _, ok := userIsCalling[callerIDNum]; ok {
+            userIsCalling[callerIDNum] = false
+            xlog.Debugf("Is user calling: %t", userIsCalling[callerIDNum])
+        }
 
         if a.dialerStatus {
             timeout := config.GetConfig().General.CallTimeout * time.Second
             xlog.Info("Sleeping " + timeout.String())
 
             time.Sleep(timeout)
-            _, err := a.CallToUser(callerIDNum)
-            if err != nil {
-                xlog.Warnf("CallToUser problem: %s", err)
+            if isCalling, ok := userIsCalling[message["CallerIDNum"]]; ok && isCalling {
+                _, err := a.CallToUser(callerIDNum)
+                if err != nil {
+                    xlog.Warnf("CallToUser problem: %s", err)
+                }
             }
         }
 
@@ -126,9 +141,9 @@ func (a *dialer) Connect() error {
         err = errors.New(message)
     })
 
-    // TODO: Dial register must be added with adding event to 'userIsCalling'
     amigoClient.RegisterHandler("PeerStatus", a.peerStatusListening)
     amigoClient.RegisterHandler("Hangup", a.peerHangup)
+    amigoClient.RegisterHandler("Dial", a.peerDial)
 
     return err
 }
@@ -160,7 +175,7 @@ func (a *dialer) originate(params map[string]string) (map[string]string, error) 
 func (a *dialer) CallToUser(userID string) (map[string]string, error) {
     // if user already calling by autodialer, then skip the new call request
     if userIsCalling[userID] {
-        return nil, errors.New("already calling by dialer")
+        return nil, errors.New("already calling somewhere :)")
     }
 
     if msisdn := a.db.ProcessedMsisdn(userID); msisdn != "" {
@@ -178,7 +193,7 @@ func (a *dialer) CallToUser(userID string) (map[string]string, error) {
         params["Priority"] = "1"
         params["Async"] = "true"
 
-        a.db.UpdatePeerStatus(userID, "", "Originate", msisdn)
+        a.db.UpdatePeerStatus(userID, "", "Dial", msisdn)
 
         amiResponse, err := a.originate(params)
         if err != nil {
@@ -198,9 +213,9 @@ func (a *dialer) StartDialing() string {
     if !a.dialerStatus {
         xlog.Debug("Dialer has been started...")
 
-        userIsCalling = make(map[string]bool)
+        //userIsCalling = make(map[string]bool)
 
-        amigoClient.RegisterHandler("Dial", a.peerDial)
+        //amigoClient.RegisterHandler("Dial", a.peerDial)
 
         a.dialerStatus = true
 
@@ -215,7 +230,7 @@ func (a *dialer) StopDialing() string {
 
     if a.dialerStatus {
 
-        amigoClient.UnregisterHandler("Dial", a.peerDial)
+        //amigoClient.UnregisterHandler("Dial", a.peerDial)
 
         a.dialerStatus = false
     }

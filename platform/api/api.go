@@ -129,6 +129,13 @@ var apis = APIs{
         handler.GetHandler().DeleteMsisdn,
     },
     API{
+        "clearAllMsisdn",
+        "DELETE",
+        "/msisdn",
+        "/clearAll",
+        handler.GetHandler().ClearAll,
+    },
+    API{
         "test",
         "GET",
         "",
