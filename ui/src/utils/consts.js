@@ -3,7 +3,7 @@ export const START = 'api/v1/dialer/start';
 export const STOP = 'api/v1/dialer/stop';
 export const APP_STATUS = 'api/v1/dialer/status';
 export const CALL_IN_PROGRESS = 'api/v1/dialer/msisdn/inProgress';
-export const CLEAR_ALL = '/api/v1/dialer/msisdn/clearAll';
+export const CLEAR_ALL = 'api/v1/dialer/msisdn/clearAll';
 
 const ACTION = 'action';
 const EXTEN = 'exten';
